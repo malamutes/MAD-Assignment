@@ -1,5 +1,6 @@
 package com.example.assignmentgroup
 
+import android.provider.ContactsContract.Data
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -30,7 +31,7 @@ enum class GameScreen(val title: String) {
     PlayerOneName(title = "PlayerOneName"),
     PlayerTwoName(title = "PlayerTwoName"),
     PlayerOneAvatar(title = "PlayerOneAvatar"),
-    PlayerTwoAvatar(title = "PlayerTwoAvatar"),
+    PlayerTwoAvatar(title = "Pl ayerTwoAvatar"),
     PlayerConfirm(title = "PlayerConfirm"),
     GamePlaying(title = "GamePlaying")
 }
@@ -126,6 +127,9 @@ fun GameApp(
                         }
                         else if(viewModel.uiState.value.vsPlayer == false)
                         {
+                            viewModel.setPlayerTwoColor(DataSource.colorOptions.random())
+                            println(uiState.playerOneColor)
+                            println(uiState.playerTwoColor)
                             viewModel.setPlayerOneColor(it)
                             navController.navigate(GameScreen.PlayerOneName.name)
                         }
@@ -150,6 +154,7 @@ fun GameApp(
                     }
                     else if(viewModel.uiState.value.vsPlayer == false)
                     {
+                        viewModel.setPlayerTwoName("AI")
                         viewModel.setPlayerOneName(it)
                         navController.navigate(GameScreen.PlayerOneAvatar.name)
                     }
@@ -158,6 +163,7 @@ fun GameApp(
             composable(route = GameScreen.PlayerTwoName.name){
                 PlayerNameScreen(uiState.playerTwoName,
                     onNextButtonClicked = {
+                        println(uiState.playerTwoName)
                         viewModel.setPlayerTwoName(it)
                         navController.navigate(GameScreen.PlayerOneAvatar.name)
                     }
@@ -172,6 +178,7 @@ fun GameApp(
                     }
                     else if(viewModel.uiState.value.vsPlayer == false)
                     {
+                        viewModel.setPlayerTwoAvatar(DataSource.avatarImages.random())
                         viewModel.setPlayerOneAvatar(it)
                         navController.navigate(GameScreen.PlayerConfirm.name)
                     }
@@ -185,6 +192,11 @@ fun GameApp(
             }
 
             composable(route = GameScreen.PlayerConfirm.name){
+                if(uiState.isGridMade == false)
+                {
+                    viewModel.setGameState(viewModel.initGridState(uiState.gridSizeScreen))
+                    viewModel.setIsGridMade(false)
+                }
                 PlayerConfirmScreen(avatar1 = uiState.playerOneAvatar,
                                     name1 = uiState.playerOneName,
                                     color1 = uiState.playerOneColor,
@@ -196,19 +208,31 @@ fun GameApp(
                     })
             }
             composable(route = GameScreen.GamePlaying.name){
-                if(uiState.isGridMade == false)
-                {
-                    viewModel.setGameState(viewModel.initGridState(uiState.gridSizeScreen))
-                    viewModel.setIsGridMade(false)
-                }
-                inGameScreen(gameState = uiState.gameState, isGameOver = uiState.gameOver,
+//                if(uiState.isGridMade == false)
+//                {
+//                    viewModel.setGameState(viewModel.initGridState(uiState.gridSizeScreen))
+//                    viewModel.setIsGridMade(false)
+//                    println(uiState.gameState)
+//                } just init it way before because of repeat, need to ask for help as to why its repeating idfk
+                inGameScreenPlayer(isPlayerOne = uiState.isPlayerOne, gameState = uiState.gameState, isGameOver = uiState.gameOver,
                     onNextButtonClicked = { /* need to type cast as an ANY list is returned from button click */
                         viewModel.setGameState(it[0] as MutableList<MutableList<MutableList<Int>>>)
                         viewModel.setGameOver(it[1] as Boolean)
                         if(uiState.gameOver == false){
+                            viewModel.setIsPlayerOne(!uiState.isPlayerOne)
                             navController.navigate(GameScreen.GamePlaying.name)
                         }
                     })
+//                inGameScreenAI(isPlayerOne = uiState.isPlayerOne, gameState = uiState.gameState, isGameOver = uiState.gameOver, freeGrids = uiState.freeGrids,
+//                    onNextButtonClicked = { /* need to type cast as an ANY list is returned from button click */
+//                        viewModel.setGameState(it[0] as MutableList<MutableList<MutableList<Int>>>)
+//                        viewModel.setGameOver(it[1] as Boolean)
+//                        viewModel.setFreeGrids(it[3] as MutableList<Int>)
+//                        if(uiState.gameOver == false){
+//                            viewModel.setIsPlayerOne(!uiState.isPlayerOne)
+//                            navController.navigate(GameScreen.GamePlaying.name)
+//                        }
+//                    })
             }
         }
     }

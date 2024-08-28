@@ -15,5 +15,6 @@ data class GameUIState(
     var playerTwoAvatar: Int = 0,
     var isGridMade: Boolean = false,
     val gameState: MutableList<MutableList<MutableList<Int>>> = mutableListOf<MutableList<MutableList<Int>>>(),
+    val freeGrids: MutableList<Int> = mutableListOf(),
     var gameOver: Boolean = false
 )

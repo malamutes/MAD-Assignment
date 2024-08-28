@@ -59,19 +59,32 @@ class GameViewModel: ViewModel(){
         _uiState.update { currentState -> currentState.copy(isPlayerOne = isP1) }
     }
 
+    fun setFreeGrids(setFG: MutableList<Int>){
+        _uiState.update { currentState -> currentState.copy(freeGrids = setFG) }
+    }
+
     fun initGridState(gridSizeOptions: Int): MutableList<MutableList<MutableList<Int>>>{
         var gameState: MutableList<MutableList<MutableList<Int>>> = mutableListOf<MutableList<MutableList<Int>>>()
         if(gridSizeOptions == 0){ /* standard board 7 by 6 */
             val row: Int = 7
             val column: Int = 6
             val initState: Int = -1
+            val initStateFree: Int = 0
             var index: Int = 0
             for(i in 0..row -1 ){
                 val rowList = mutableListOf<MutableList<Int>>()
                 for(j in 0..column -1)
                 {
-                    rowList.add(mutableListOf(index, initState))
-                    index += 1
+                    if(i == row -1)
+                    {
+                        rowList.add(mutableListOf(index, initStateFree))
+                        index += 1
+                    }
+                    else
+                    {
+                        rowList.add(mutableListOf(index, initState))
+                        index += 1
+                    }
                 }
                 gameState.add(rowList)
             }
@@ -80,13 +93,22 @@ class GameViewModel: ViewModel(){
             val row: Int = 6
             val column: Int = 5
             val initState: Int = -1
+            val initStateFree: Int = 0
             var index: Int = 0
             for(i in 0..row -1 ){
                 val rowList = mutableListOf<MutableList<Int>>()
                 for(j in 0..column -1)
                 {
-                    rowList.add(mutableListOf(index, initState))
-                    index += 1
+                    if(i == row -1)
+                    {
+                        rowList.add(mutableListOf(index, initStateFree))
+                        index += 1
+                    }
+                    else
+                    {
+                        rowList.add(mutableListOf(index, initState))
+                        index += 1
+                    }
                 }
                 gameState.add(rowList)
             }
@@ -95,13 +117,22 @@ class GameViewModel: ViewModel(){
             val row: Int = 8
             val column: Int = 7
             val initState: Int = -1
+            val initStateFree: Int = 0
             var index: Int = 0
             for(i in 0..row -1 ){
                 val rowList = mutableListOf<MutableList<Int>>()
                 for(j in 0..column -1)
                 {
-                    rowList.add(mutableListOf(index, initState))
-                    index += 1
+                    if(i == row -1)
+                    {
+                        rowList.add(mutableListOf(index, initStateFree))
+                        index += 1
+                    }
+                    else
+                    {
+                        rowList.add(mutableListOf(index, initState))
+                        index += 1
+                    }
                 }
                 gameState.add(rowList)
             }

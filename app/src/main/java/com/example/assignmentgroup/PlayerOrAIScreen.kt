@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun PlayerOrAIScreen(playerOrAiOption: List<Pair<String, Boolean>>,
                      onNextButtonClicked: (Boolean) -> Unit){
-//    println("asdsaasd") button function causing multiple prints
+    println("ASUDHAUIHDSUIHISH")
     Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally , modifier = Modifier
         .padding(50.dp)
         .fillMaxSize()) {

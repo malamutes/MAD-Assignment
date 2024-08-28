@@ -43,11 +43,12 @@ fun PlayerConfirmScreen(avatar1: Int, name1: String, color1: Color,
             confirmButton(onClick = {onNextButtonClicked()})
         }
 
-    }
+    } /* can just collapse into one where AI is just player two with random moves */
     else if(vsPlayer == false)
     {
         Column(modifier = Modifier.padding(50.dp)) {
             PlayerConfirm(avatar = avatar1, name = name1, color = color1) {}
+            PlayerConfirm(avatar = avatar2, name = name2, color = color2) {}
             confirmButton(onClick = {onNextButtonClicked()})
         }
 
