@@ -1,4 +1,4 @@
-package com.example.assignmentpaul
+package com.example.assignmentgroup
 
 import androidx.compose.ui.graphics.Color
 import com.example.recyclerviewcompose.R

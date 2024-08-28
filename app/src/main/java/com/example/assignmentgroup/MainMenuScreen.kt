@@ -1,4 +1,4 @@
-package com.example.assignmentpaul
+package com.example.assignmentgroup
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -68,6 +68,8 @@ fun GameApp(
     viewModel: GameViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     navController: NavHostController = rememberNavController()
     ){
+//    println("asdadasd")  /* to do with very first composable i have */
+    /*recomposing multiple times so printing multiple times */
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = GameScreen.valueOf(
         backStackEntry?.destination?.route ?: GameScreen.PlayerOrAI.name)
@@ -80,7 +82,9 @@ fun GameApp(
                 navigateUp = { navController.navigateUp() }
             )
         },
-    ) { innerPadding ->
+    )
+    { innerPadding ->
+
         val uiState by viewModel.uiState.collectAsState()
 
         NavHost(
@@ -192,9 +196,18 @@ fun GameApp(
                     })
             }
             composable(route = GameScreen.GamePlaying.name){
-                inGameScreen(gridSizeOptions = uiState.gridSizeScreen, gameState = uiState.gameState, isGridMade = uiState.isGridMade,
-                    onNextButtonClicked = {
-                        viewModel.setIsGridMade()
+                if(uiState.isGridMade == false)
+                {
+                    viewModel.setGameState(viewModel.initGridState(uiState.gridSizeScreen))
+                    viewModel.setIsGridMade(false)
+                }
+                inGameScreen(gameState = uiState.gameState, isGameOver = uiState.gameOver,
+                    onNextButtonClicked = { /* need to type cast as an ANY list is returned from button click */
+                        viewModel.setGameState(it[0] as MutableList<MutableList<MutableList<Int>>>)
+                        viewModel.setGameOver(it[1] as Boolean)
+                        if(uiState.gameOver == false){
+                            navController.navigate(GameScreen.GamePlaying.name)
+                        }
                     })
             }
         }
