@@ -43,6 +43,14 @@ class GameViewModel: ViewModel(){
         _uiState.update { currentState -> currentState.copy(playerTwoAvatar = avatar2) }
     }
 
+    fun setIsGridMade(gridMade: Boolean){
+        _uiState.update { currentState -> currentState.copy(isGridMade = gridMade) }
+    }
+
+    fun setGameOver(gameOver: Boolean){
+        _uiState.update { currentState -> currentState.copy(gameOver = gameOver) }
+    }
+
     fun setIsPlayerOne(isP1: Boolean){
         _uiState.update { currentState -> currentState.copy(isPlayerOne = isP1) }
     }

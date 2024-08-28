@@ -31,7 +31,8 @@ enum class GameScreen(val title: String) {
     PlayerTwoName(title = "PlayerTwoName"),
     PlayerOneAvatar(title = "PlayerOneAvatar"),
     PlayerTwoAvatar(title = "PlayerTwoAvatar"),
-    PlayerConfirm(title = "PlayerConfirm")
+    PlayerConfirm(title = "PlayerConfirm"),
+    GamePlaying(title = "GamePlaying")
 }
 
 
@@ -97,7 +98,6 @@ fun GameApp(
                         viewModel.setPlayerVsAI(it) /* referencing DataSource initial options struct */
                         navController.navigate(GameScreen.GridSize.name)}
                 )
-
             }
             composable(route = GameScreen.GridSize.name){
                 GridSizeScreen(
@@ -187,12 +187,17 @@ fun GameApp(
                                     avatar2 = uiState.playerTwoAvatar,
                                     name2 = uiState.playerTwoName,
                                     color2 = uiState.playerTwoColor,
-                                    vsPlayer = uiState.vsPlayer) {
-
-                }
+                                    vsPlayer = uiState.vsPlayer,
+                                    onNextButtonClicked = {navController.navigate(GameScreen.GamePlaying.name)
+                    })
+            }
+            composable(route = GameScreen.GamePlaying.name){
+                inGameScreen(gridSizeOptions = uiState.gridSizeScreen, gameState = uiState.gameState, isGridMade = uiState.isGridMade,
+                    onNextButtonClicked = {
+                        viewModel.setIsGridMade()
+                    })
             }
         }
-
     }
 }
 

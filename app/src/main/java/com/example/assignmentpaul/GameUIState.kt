@@ -12,5 +12,8 @@ data class GameUIState(
     var gameScore: List<Int> = listOf(0,0),
     var isPlayerOne: Boolean = true,
     var playerOneAvatar: Int = 0,
-    var playerTwoAvatar: Int = 0
+    var playerTwoAvatar: Int = 0,
+    var isGridMade: Boolean = false,
+    val gameState: MutableList<MutableList<MutableList<Int>>> = mutableListOf<MutableList<MutableList<Int>>>(),
+    var gameOver: Boolean = false
 )

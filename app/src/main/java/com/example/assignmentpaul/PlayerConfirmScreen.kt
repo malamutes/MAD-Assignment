@@ -69,7 +69,7 @@ fun PlayerConfirmScreen(avatar1: Int, name1: String, color1: Color,
         Column(modifier = Modifier.padding(50.dp)) {
             PlayerConfirm(avatar = avatar1, name = name1, color = color1 ) {}
             PlayerConfirm(avatar = avatar2, name = name2, color = color2) {}
-            confirmButton(onClick = {onNextButtonClicked})
+            confirmButton(onClick = {onNextButtonClicked()})
         }
 
     }
@@ -77,7 +77,7 @@ fun PlayerConfirmScreen(avatar1: Int, name1: String, color1: Color,
     {
         Column(modifier = Modifier.padding(50.dp)) {
             PlayerConfirm(avatar = avatar1, name = name1, color = color1) {}
-            confirmButton(onClick = {onNextButtonClicked})
+            confirmButton(onClick = {onNextButtonClicked()})
         }
 
     }
@@ -117,7 +117,7 @@ fun PlayerConfirm(avatar: Int, name: String, color: Color,  onClick: () -> Unit)
 fun confirmButton(onClick: () -> Unit){
     Button(onClick = onClick,
         shape = CircleShape,
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.scrim),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
         modifier = Modifier
             .size(
                 width = (LocalConfiguration.current.screenHeightDp * 0.25f).dp,

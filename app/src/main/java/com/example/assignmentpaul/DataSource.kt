@@ -6,8 +6,8 @@ import com.example.recyclerviewcompose.R
 object DataSource {
     val gridSizeOptions = listOf<Pair<String, Int>>(
         Pair("Standard (7X6)", 0),
-        Pair("Small (6X5)", 0),
-        Pair("Large (8X7)", 0)
+        Pair("Small (6X5)", 1),
+        Pair("Large (8X7)", 2)
     )
 
     val colorOptions = listOf<Color>(

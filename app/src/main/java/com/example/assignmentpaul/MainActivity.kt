@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContent {
             AppTheme(darkTheme = true, dynamicColor = false) {
-                IngameScreen(onNextButtonClicked = { println(it) })
+                GameApp()
             }
         }
     }

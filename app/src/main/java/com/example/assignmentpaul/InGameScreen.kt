@@ -2,6 +2,7 @@ package com.example.assignmentpaul
 
 import android.widget.Button
 import android.widget.Toast
+import androidx.collection.ObjectList
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -56,10 +57,8 @@ import androidx.compose.ui.unit.sp
 import com.example.recyclerviewcompose.R
 import com.example.ui.theme.*
 import kotlinx.coroutines.launch
+import java.util.Objects
 import kotlin.random.Random
-
-
-
 
 
 var avatarImages2 = listOf(
@@ -71,29 +70,95 @@ var avatarImages2 = listOf(
     R.drawable.lucy,
 )
 
-@Composable
-fun IngameScreen(onNextButtonClicked: (Int) -> Unit){
-    val row: Int = 8
-    val column: Int = 7
-    var counter: Int = 0
-    val list = mutableListOf<MutableList<Int>>()
-    for(i in 0..row -1 ){
-        val rowList = mutableListOf<Int>()
-        for(j in 0..column -1)
-        {
-            rowList.add(counter)
-            counter += 1
+
+/* 2d matrix with list in each entry for index and state, so 3d matrix*/
+fun initGridState(gridSizeOptions: Int,
+                  gameState: MutableList<MutableList<MutableList<Int>>>): MutableList<MutableList<MutableList<Int>>>{
+    if(gridSizeOptions == 0){ /* standard board 7 by 6 */
+        val row: Int = 7
+        val column: Int = 6
+        val initState: Int = -1
+        var index: Int = 0
+        for(i in 0..row -1 ){
+            val rowList = mutableListOf<MutableList<Int>>()
+            for(j in 0..column -1)
+            {
+                rowList.add(mutableListOf(index, initState))
+                index += 1
+            }
+            gameState.add(rowList)
         }
-        list.add(rowList)
+    }
+    if(gridSizeOptions == 0){ /* small board 6 by 5 */
+        val row: Int = 6
+        val column: Int = 5
+        val initState: Int = -1
+        var index: Int = 0
+        for(i in 0..row -1 ){
+            val rowList = mutableListOf<MutableList<Int>>()
+            for(j in 0..column -1)
+            {
+                rowList.add(mutableListOf(index, initState))
+                index += 1
+            }
+            gameState.add(rowList)
+        }
+    }
+    else if(gridSizeOptions == 1){ /* large board 8 by 7 */
+        val row: Int = 8
+        val column: Int = 7
+        val initState: Int = -1
+        var index: Int = 0
+        for(i in 0..row -1 ){
+            val rowList = mutableListOf<MutableList<Int>>()
+            for(j in 0..column -1)
+            {
+                rowList.add(mutableListOf(index, initState))
+                index += 1
+            }
+            gameState.add(rowList)
+        }
+    }
+    return gameState
+}
+
+@Composable
+fun inGameScreen(gridSizeOptions: Int, isGridMade: Boolean, gameState: MutableList<MutableList<MutableList<Int>>>,
+                 onNextButtonClicked: () -> Unit){
+    if(isGridMade == false)
+    {
+        initGridState(gridSizeOptions, gameState)
+    }
+
+    Button(onClick = {},
+        shape = CircleShape,
+        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+        modifier = Modifier
+            .size(
+                width = (LocalConfiguration.current.screenHeightDp * 0.25f).dp,
+                height = (LocalConfiguration.current.screenHeightDp * 0.25f).dp
+            )
+            .padding(1.dp)) {
+        Text(text = "Confirm", fontSize = 25.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
     }
     /* can  be initial render i guess prob shit way to do it will ened to find better solution*/
-    LazyVerticalGrid(columns = GridCells.Fixed(column)) {
-        for(k in 0.. row-1){
-            items(list[k]) { element ->
-                cardRender(element = element, onClick = { onNextButtonClicked(element) })
-            }
-        }
-    }
+//    LazyVerticalGrid(columns = GridCells.Fixed(gameState[0]. /* check column try last index */)) {
+//        for(k in 0.. row - 1){
+//            items(list[k]) { element ->
+//                if(element[1] == 1){
+//                    cardDefaultRender(element = element, onClick = { (onNextButtonClicked(element[0]).toString()
+//                            + onNextButtonClicked(element[1]).toString()) })
+//                }
+//                else if(element[1] == -1)
+//                {
+//                    cardPlayerRender(element = element, onClick = { (onNextButtonClicked(element[0]).toString()
+//                            + onNextButtonClicked(element[1]).toString()) })
+//                }
+//            }
+//        }
+//    }
+
+
     /*LazyVerticalGrid(columns = GridCells.Fixed(column)) {
         for(k in 0.. row-1){
             items(list[k]) { element ->
@@ -105,7 +170,7 @@ fun IngameScreen(onNextButtonClicked: (Int) -> Unit){
 
 
 @Composable
-fun cardRender(element: Int, onClick: () -> Unit){
+fun cardDefaultRender(element: MutableList<Int>, onClick: () -> Unit){
     Button(onClick = onClick,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.scrim),
@@ -118,7 +183,7 @@ fun cardRender(element: Int, onClick: () -> Unit){
 }
 
 @Composable
-fun cardRedRender(element: Int){
+fun cardPlayerRender(element: MutableList<Int>, onClick: () -> Unit){
     Button(onClick = { },
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
