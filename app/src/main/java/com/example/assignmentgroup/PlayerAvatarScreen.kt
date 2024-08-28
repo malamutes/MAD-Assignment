@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerAvatarScreen(avatar: List<Int>, onNextButtonClicked: (Int) -> Unit){
+fun PlayerAvatarScreen(avatar: List<Int>, player: Player, onNextButtonClicked: (Player) -> Unit){
     /*LazyVerticalGrid(columns = GridCells.Adaptive(128.dp), modifier = Modifier.fillMaxHeight()) {
         items(avatar) {
                 avatar -> PlayerAvatar(avatar)
@@ -33,7 +33,7 @@ fun PlayerAvatarScreen(avatar: List<Int>, onNextButtonClicked: (Int) -> Unit){
     }*/
     LazyRow(modifier = Modifier.fillMaxHeight()) {
         items(avatar) {
-                avatar -> PlayerAvatar(avatar, onClick = {onNextButtonClicked(avatar)})
+                avatar -> PlayerAvatar(avatar, onClick = {player.playerAvatar = avatar; onNextButtonClicked(player)})
         }
     }
 }

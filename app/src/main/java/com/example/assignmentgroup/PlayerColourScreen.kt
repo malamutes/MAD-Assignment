@@ -22,11 +22,12 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerColourScreen(colorOption: List<Color>,
-                       onNextButtonClicked: (Color) -> Unit){
+                       player: Player,
+                       onNextButtonClicked: (Player) -> Unit){
     LazyRow(modifier = Modifier.fillMaxHeight()) {
         items(colorOption) {
             colors -> DiscColourCard(colorOption = colors,
-            onClick = {onNextButtonClicked(colors)})
+            onClick = { player.playerColor = colors; onNextButtonClicked(player) })
         }
     }
 }
