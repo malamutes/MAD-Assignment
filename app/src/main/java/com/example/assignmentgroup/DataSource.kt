@@ -37,4 +37,9 @@ object DataSource {
         R.drawable.silco,
         R.drawable.lucy,
     )
+
+    val playAgain = listOf<Pair<String, Boolean>>(
+        Pair("MAINMENU", false),
+        Pair("PLAYAGAIN", true)
+    )
 }

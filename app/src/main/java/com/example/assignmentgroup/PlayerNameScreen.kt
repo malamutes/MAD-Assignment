@@ -13,11 +13,11 @@ import androidx.compose.runtime.setValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerNameScreen(playerName: String, onNextButtonClicked: (String) -> Unit){
+fun PlayerNameScreen(playerName: String, player: Player, onNextButtonClicked: (Player) -> Unit){
     var playerNameOut by remember { mutableStateOf(playerName) }
     Column {
         TextField(value = playerNameOut, onValueChange = {playerNameOut = it})
-        Button(onClick = { onNextButtonClicked(playerNameOut) }) {
+        Button(onClick = { player.playerName = playerNameOut; onNextButtonClicked(player) }) {
             Text(text = "Enter")
         }
     }

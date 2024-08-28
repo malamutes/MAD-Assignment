@@ -31,28 +31,14 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun PlayerConfirmScreen(avatar1: Int, name1: String, color1: Color,
-                        avatar2: Int, name2: String, color2: Color,
-                        vsPlayer: Boolean,
+fun PlayerConfirmScreen(player1: Player, player2: Player,
                         onNextButtonClicked: () -> Unit){
-    if(vsPlayer == true)
-    {
+
         Column(modifier = Modifier.padding(50.dp)) {
-            PlayerConfirm(avatar = avatar1, name = name1, color = color1 ) {}
-            PlayerConfirm(avatar = avatar2, name = name2, color = color2) {}
+            PlayerConfirm(avatar = player1.playerAvatar, name = player1.playerName, color = player1.playerColor) {}
+            PlayerConfirm(avatar = player2.playerAvatar, name = player2.playerName, color = player2.playerColor) {}
             confirmButton(onClick = {onNextButtonClicked()})
         }
-
-    } /* can just collapse into one where AI is just player two with random moves */
-    else if(vsPlayer == false)
-    {
-        Column(modifier = Modifier.padding(50.dp)) {
-            PlayerConfirm(avatar = avatar1, name = name1, color = color1) {}
-            PlayerConfirm(avatar = avatar2, name = name2, color = color2) {}
-            confirmButton(onClick = {onNextButtonClicked()})
-        }
-
-    }
 }
 
 @Composable

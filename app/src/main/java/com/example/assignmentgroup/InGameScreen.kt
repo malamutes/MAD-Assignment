@@ -32,135 +32,196 @@ var avatarImages2 = listOf(
     R.drawable.lucy,
 )
 
-
 /* 2d matrix with list in each entry for index and state, so 3d matrix*/
 //so row, column and then inner most list is < index, state of index>
 
 @Composable
-fun inGameScreenPlayer(isPlayerOne: Boolean, gameState: MutableList<MutableList<MutableList<Int>>>,
-                 isGameOver: Boolean,
+fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player2: Player,
                  onNextButtonClicked: (List<Any>) -> Unit){ /* dunno if any is an abuse see if theres better ways later on */
 
-    var gameStateOut = gameState
-    var isGameOverOut = isGameOver
+    var boardGrid = gameBoard.boardGrid
+    var boardFreeGrid = gameBoard.boardFreeGrid
+    var playerOneGridTaken = player1.playerGrid
+    var playerTwoGridTaken = player2.playerGrid
 
-    /* can  be initial render i guess prob shit way to do it will ened to find better solution*/
-    LazyVerticalGrid(columns = GridCells.Fixed(gameState[0].count()), modifier = Modifier.height(1.dp)
-    /*tf this fixes it but doesnt even do anything*/) {
-        for(i in 0..gameState.count()-1)
+    var gameOverOut = false
+
+    LazyVerticalGrid(columns = GridCells.Fixed(boardGrid[0].count()), modifier = Modifier.height(1.dp)
+        /*tf this fixes it but doesnt even do anything*/) {
+        for(i in 0..boardGrid.count()-1)
         {
-            for(j in 0..gameState[0].count()-1)
+            for(j in 0..boardGrid[0].count()-1)
             {
-                if(gameState[i][j][1] == 1)
+                if(boardGrid[i][j][1] == 1)/* occupied by player 1*/
                 {
                     items(1) { element ->
-                        cardRedRender(element = gameState[i][j][0], onClick = {onNextButtonClicked(listOf(gameStateOut, isGameOver)) })
+                        cardPlayerRender(player1.playerColor, onClick = { })
                     }
                 }
-                else if(gameState[i][j][1] == 0)
+
+                else if(boardGrid[i][j][1] == 2)/* occupied by player 1*/
                 {
                     items(1) { element ->
-                        cardDefaultRender(element = gameState[i][j][0], onClick = {
+                        cardPlayerRender(player2.playerColor, onClick = { })
+                    }
+                }
+
+                else if(boardGrid[i][j][1] == 0) /* free circle to be occupied this is where core logic happens, the other if statements is just to render the existing game*/
+                {
+                    items(1) { element ->
+                        cardDefaultRender(element = boardGrid[i][j][0], onClick = {
+                            boardFreeGrid -= 1
                             if(isPlayerOne == true)
                             {
-                            gameStateOut[i][j][1] = 1
+                                playerOneGridTaken.add(boardGrid[i][j][0])
+                                boardGrid[i][j][1] = 1
                                 if(i - 1 > -1)
                                 {
-                                    gameStateOut[i - 1][j][1] = 0
+                                    boardGrid[i - 1][j][1] = 0
                                 }
-                            onNextButtonClicked(listOf(gameStateOut, isGameOver))
+                                if((gameBoard.consecutiveCheckers(playerOneGridTaken, gameBoard.boardGrid[0].count()) == true))
+                                {
+                                    gameOverOut = true
+                                    player1.updateScore()
+                                }
+                                else if(gameBoard.boardFreeGrid == 0)
+                                {
+                                    gameOverOut = true
+                                }
+                                onNextButtonClicked(listOf(gameBoard, player1, player2, gameOverOut))
                             }
                             else if(isPlayerOne == false)
                             {
-                            gameStateOut[i][j][1] = 2
+                                playerTwoGridTaken.add(boardGrid[i][j][0])
+                                boardGrid[i][j][1] = 2
                                 if(i - 1 > -1)
                                 {
-                                    gameStateOut[i - 1][j][1] = 0
+                                    boardGrid[i - 1][j][1] = 0
                                 }
-                            onNextButtonClicked(listOf(gameStateOut, isGameOver))
+                                if((gameBoard.consecutiveCheckers(playerTwoGridTaken, gameBoard.boardGrid[0].count()) == true))
+                                {
+                                    gameOverOut = true
+                                    player2.updateScore()
+                                }
+
+                                else if(gameBoard.boardFreeGrid == 0)
+                                {
+                                    gameOverOut = true
+                                }
+                                onNextButtonClicked(listOf(gameBoard, player1, player2, gameOverOut))
                             }
                         })
                     }
                 }
-                else if(gameState[i][j][1] == 2)
+                else if(boardGrid[i][j][1] == -1) /* locked circle to be occupied */
                 {
                     items(1) { element ->
-                        cardBlueRender(element = gameState[i][j][0], onClick = {onNextButtonClicked(listOf(gameStateOut, isGameOver)) })
-                    }
-                }
-                else if(gameState[i][j][1] == -1)
-                {
-                    items(1) { element ->
-                        cardMagentaRender(element = gameState[i][j][0], onClick = {})
+                        cardMagentaRender(element = boardGrid[i][j][0], onClick = {})
                     }
                 }
             }
         }
-
     }
 }
+
 
 @Composable
-fun inGameScreenAI(isPlayerOne: Boolean, gameState: MutableList<MutableList<MutableList<Int>>>,
-                       isGameOver: Boolean, freeGrids: MutableList<Int>,
-                       onNextButtonClicked: (List<Any>) -> Unit){ /* dunno if any is an abuse see if theres better ways later on */
+fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
+                 onNextButtonClicked: (List<Any>) -> Unit){ /* dunno if any is an abuse see if theres better ways later on */
 
-    var gameStateOut = gameState
-    var isGameOverOut = isGameOver
+    var boardGrid = gameBoard.boardGrid
+    var boardFreeGrid = gameBoard.boardFreeGrid
+    var playerOneGridTaken = player1.playerGrid
+    var playerTwoGridTaken = player2.playerGrid
 
-    /* can  be initial render i guess prob shit way to do it will ened to find better solution*/
-    LazyVerticalGrid(columns = GridCells.Fixed(gameState[0].count()), modifier = Modifier.height(1.dp)
+    var boardFreeGridList = gameBoard.boardFreeGridList
+
+    var gameOverOut = false
+
+    LazyVerticalGrid(columns = GridCells.Fixed(boardGrid[0].count()), modifier = Modifier.height(1.dp)
         /*tf this fixes it but doesnt even do anything*/) {
-        for(i in 0..gameState.count()-1)
+        for(i in 0..boardGrid.count()-1)
         {
-            for(j in 0..gameState[0].count()-1)
+            for(j in 0..boardGrid[0].count()-1)
             {
-                if(gameState[i][j][1] == 1)
+                if(boardGrid[i][j][1] == 1)/* occupied by player 1*/
                 {
                     items(1) { element ->
-                        cardRedRender(element = gameState[i][j][0], onClick = {gameStateOut[i][j][1] = 1; onNextButtonClicked(listOf(gameStateOut, isGameOver)) })
+                        cardPlayerRender(player1.playerColor, onClick = { })
                     }
                 }
-                else if(gameState[i][j][1] == 0)
+
+                else if(boardGrid[i][j][1] == 2)/* occupied by player 1*/
                 {
+                    items(1) { element ->
+                        cardPlayerRender(Color.Red, onClick = { })
+                    }
+                }
+
+                else if(boardGrid[i][j][1] == 0) /* free circle to be occupied this is where core logic happens, the other if statements is just to render the existing game*/
+                {
+                    boardFreeGridList.add(Pair(i, j))
 
                     items(1) { element ->
-                        cardDefaultRender(element = gameState[i][j][0], onClick = {
-                            if(isPlayerOne == true)
+                        cardDefaultRender(element = boardGrid[i][j][0], onClick = {
+                            boardFreeGrid -= 1
+                            playerOneGridTaken.add(boardGrid[i][j][0])
+                            boardGrid[i][j][1] = 1
+
+                            if(i - 1 > -1)
                             {
-                                gameStateOut[i][j][1] = 1;
-                                gameStateOut[i - 1][j][1] = 0;
-                                freeGrids.remove(gameStateOut[i][j][0])
-                                onNextButtonClicked(listOf(gameStateOut, isGameOver, freeGrids))
+                                boardGrid[i - 1][j][1] = 0
+                                boardFreeGridList.add(Pair(i - 1, j))
                             }
-                            else if(isPlayerOne == false)
+
+                            boardFreeGridList.remove(Pair(i, j))
+
+                            var aiPick = boardFreeGridList.random()
+
+
+                            boardGrid[aiPick.first][aiPick.second][1] = 2
+                            boardFreeGridList.remove(Pair(aiPick.first, aiPick.second))
+                            playerTwoGridTaken.add(boardGrid[aiPick.first][aiPick.second][0])
+
+                            if(aiPick.first - 1 > -1)
                             {
-                                var pick = freeGrids.random()
-                                gameStateOut[(pick / gameState.count()).toInt()][pick % gameState.count()][1] = 2;
-                                gameStateOut[i - 1][j][1] = 0;
-                                freeGrids.remove(gameStateOut[i][j][0]);
-                                onNextButtonClicked(listOf(gameStateOut, isGameOver, freeGrids))
+                                boardGrid[aiPick.first - 1][aiPick.second][1] = 0
+                                boardFreeGridList.add(Pair(aiPick.first - 1, aiPick.second))
                             }
+
+                            if((gameBoard.consecutiveCheckers(playerOneGridTaken, gameBoard.boardGrid[0].count()) == true))
+                            {
+                                gameOverOut = true
+                                player1.updateScore()
+                            }
+                            else if((gameBoard.consecutiveCheckers(playerTwoGridTaken, gameBoard.boardGrid[0].count()) == true))
+                            {
+                                gameOverOut = true
+                                player1.updateScore()
+                            }
+                            else if(gameBoard.boardFreeGrid == 0)
+                            {
+                                gameOverOut = true
+                            }
+
+                            println(boardFreeGridList)
+                            println(aiPick)
+                            onNextButtonClicked(listOf(gameBoard, player1, player2, gameOverOut))
                         })
                     }
                 }
-                else if(gameState[i][j][1] == 2)
+                else if(boardGrid[i][j][1] == -1) /* locked circle to be occupied */
                 {
                     items(1) { element ->
-                        cardBlueRender(element = gameState[i][j][0], onClick = {gameStateOut[i][j][1] = 1; onNextButtonClicked(listOf(gameStateOut, isGameOver)) })
-                    }
-                }
-                else if(gameState[i][j][1] == -1)
-                {
-                    items(1) { element ->
-                        cardMagentaRender(element = gameState[i][j][0], onClick = {})
+                        cardMagentaRender(element = boardGrid[i][j][0], onClick = {})
                     }
                 }
             }
         }
-
     }
 }
+
+
 
 @Composable
 fun cardDefaultRender(element: Int, onClick: () -> Unit){
@@ -176,40 +237,26 @@ fun cardDefaultRender(element: Int, onClick: () -> Unit){
 }
 
 @Composable
-fun cardRedRender(element: Int, onClick: () -> Unit){
-    Button(onClick = { },
-        shape = CircleShape,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-        modifier = Modifier
-            .aspectRatio(1f)
-            .padding(1.dp)) {
-        Text(text = element.toString(), fontSize = 1.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
-    }
-}
-
-@Composable
-fun cardBlueRender(element: Int, onClick: () -> Unit){
-    Button(onClick = { },
-        shape = CircleShape,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
-        modifier = Modifier
-            .aspectRatio(1f)
-            .padding(1.dp)) {
-        Text(text = element.toString(), fontSize = 1.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
-    }
-}
-
-
-@Composable
 fun cardMagentaRender(element: Int, onClick: () -> Unit){
-    Button(onClick = { },
+    Button(onClick = onClick,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = Color.Magenta),
         modifier = Modifier
             .aspectRatio(1f)
+            .size(50.dp)
             .padding(1.dp)) {
         Text(text = element.toString(), fontSize = 1.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
     }
 }
 
-
+@Composable
+fun cardPlayerRender(color: Color, onClick: () -> Unit){
+    Button(onClick = { },
+        shape = CircleShape,
+        colors = ButtonDefaults.buttonColors(containerColor = color),
+        modifier = Modifier
+            .aspectRatio(1f)
+            .padding(1.dp)) {
+        Text(text = "1", fontSize = 25.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
+    }
+}
