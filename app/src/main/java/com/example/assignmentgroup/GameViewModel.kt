@@ -2,13 +2,14 @@ package com.example.assignmentgroup
 
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class GameViewModel: ViewModel(){
-    private val _uiState = MutableStateFlow(GameUIState(playerOneColor = Color.Red, playerTwoColor = Color.Blue))
+    private val _uiState = MutableStateFlow(GameUIState())
     val uiState: StateFlow<GameUIState> = _uiState.asStateFlow()
 
     fun setPlayerVsAI(pva: Boolean){
@@ -19,51 +20,33 @@ class GameViewModel: ViewModel(){
         _uiState.update { currentstate -> currentstate.copy(gridSizeScreen = size) }
     }
 
-    fun setPlayerOneColor(col1: Color){
-        _uiState.update { currentState -> currentState.copy(playerOneColor = col1) }
-    }
-
-    fun setPlayerTwoColor(col2: Color){
-        _uiState.update { currentState -> currentState.copy(playerTwoColor = col2) }
-    }
-
-    fun setPlayerOneName(name1: String){
-        _uiState.update { currentState -> currentState.copy(playerOneName = name1) }
-    }
-
-    fun setPlayerTwoName(name2: String){
-        _uiState.update { currentState -> currentState.copy(playerTwoName = name2) }
-    }
-
-    fun setPlayerOneAvatar(avatar1: Int){
-        _uiState.update { currentState -> currentState.copy(playerOneAvatar = avatar1) }
-    }
-
-    fun setPlayerTwoAvatar(avatar2: Int){
-        _uiState.update { currentState -> currentState.copy(playerTwoAvatar = avatar2) }
-    }
-
     fun setIsGridMade(gridMade: Boolean){
         _uiState.update { currentState -> currentState.copy(isGridMade = gridMade) }
     }
 
-    fun setGameOver(gameOver: Boolean){
-        _uiState.update { currentState -> currentState.copy(gameOver = gameOver) }
-    }
 
-    fun setGameState(gameState: MutableList<MutableList<MutableList<Int>>>){
-        _uiState.update { currentState -> currentState.copy(gameState = gameState) }
+    fun updateBoard(gameBoard: Board){
+        _uiState.update { currentState -> currentState.copy(gameBoard = gameBoard) }
     }
 
     fun setIsPlayerOne(isP1: Boolean){
         _uiState.update { currentState -> currentState.copy(isPlayerOne = isP1) }
     }
 
-    fun setFreeGrids(setFG: MutableList<Int>){
-        _uiState.update { currentState -> currentState.copy(freeGrids = setFG) }
+    fun updatePlayerOne(player: Player){
+        _uiState.update { currentState -> currentState.copy(playerOne = player) }
     }
 
-    fun initGridState(gridSizeOptions: Int): MutableList<MutableList<MutableList<Int>>>{
+    fun updatePlayerTwo(player: Player){
+        _uiState.update { currentState -> currentState.copy(playerTwo = player) }
+    }
+
+//    fun setFreeGrids(setFG: MutableList<Int>){
+//        _uiState.update { currentState -> currentState.copy(freeGrids = setFG) }
+//    }
+
+    fun initGridState(gridSizeOptions: Int): Board{
+        var freeGrid: Int = 0
         var gameState: MutableList<MutableList<MutableList<Int>>> = mutableListOf<MutableList<MutableList<Int>>>()
         if(gridSizeOptions == 0){ /* standard board 7 by 6 */
             val row: Int = 7
@@ -88,6 +71,7 @@ class GameViewModel: ViewModel(){
                 }
                 gameState.add(rowList)
             }
+            freeGrid = row * column
         }
         if(gridSizeOptions == 1){ /* small board 6 by 5 */
             val row: Int = 6
@@ -112,6 +96,7 @@ class GameViewModel: ViewModel(){
                 }
                 gameState.add(rowList)
             }
+            freeGrid = row * column
         }
         else if(gridSizeOptions == 2){ /* large board 8 by 7 */
             val row: Int = 8
@@ -136,8 +121,9 @@ class GameViewModel: ViewModel(){
                 }
                 gameState.add(rowList)
             }
+            freeGrid = row * column
         }
-        return gameState
+        var board: Board = Board(gameBoard = gameState, freeGrid = freeGrid)
+        return board
     }
-
 }
