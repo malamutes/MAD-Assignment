@@ -123,7 +123,8 @@ class GameViewModel: ViewModel(){
             }
             freeGrid = row * column
         }
-        var board: Board = Board(gameBoard = gameState, freeGrid = freeGrid)
+
+        var board: Board = Board(gameBoard = gameState, freeGrid = freeGrid, freeGridList = mutableSetOf())
         return board
     }
 }
