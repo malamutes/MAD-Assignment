@@ -36,6 +36,7 @@ enum class GameScreen(val title: String) {
     PlayerTwoAvatar(title = "Pl ayerTwoAvatar"),
     PlayerConfirm(title = "PlayerConfirm"),
     GamePlaying(title = "GamePlaying"),
+    GamePlayingAI(title = "GamePlayingAI"),
     GameOverScreen(title = "GameOver")
 }
 
@@ -201,8 +202,15 @@ fun GameApp(
                     viewModel.setIsGridMade(true)
                 }
                 PlayerConfirmScreen(player1 = uiState.playerOne, player2 = uiState.playerTwo,
-                                    onNextButtonClicked = {navController.navigate(GameScreen.GamePlaying.name)
-                                    }
+                                    onNextButtonClicked = {
+                                        if(uiState.vsPlayer == true)
+                                        {
+                                            navController.navigate(GameScreen.GamePlaying.name)
+                                        }
+                                        else if(uiState.vsPlayer == false)
+                                        {
+                                            navController.navigate(GameScreen.GamePlayingAI.name)
+                                        }
                 )
             }
 
@@ -223,6 +231,25 @@ fun GameApp(
                         {
                             navController.navigate(GameScreen.GameOverScreen.name)
                         }
+
+                    })
+            }
+            composable(route = GameScreen.GamePlayingAI.name){
+                inGameScreenAI(gameBoard = uiState.gameBoard, player1 = uiState.playerOne, player2 = uiState.playerTwo,
+                    onNextButtonClicked = { /* need to type cast as an ANY list is returned from button click */
+                        viewModel.updateBoard(it[0] as Board)
+                        viewModel.updatePlayerOne(it[1] as Player)
+                        viewModel.updatePlayerTwo(it[2] as Player)
+
+                        if(it[3] == false)
+                        {
+                            navController.navigate(GameScreen.GamePlayingAI.name)
+                        }
+                        else if(it[3] == true)
+                        {
+                            navController.navigate(GameScreen.GameOverScreen.name)
+                        }
+                        
                     })
             }
             composable(route = GameScreen.GameOverScreen.name){
