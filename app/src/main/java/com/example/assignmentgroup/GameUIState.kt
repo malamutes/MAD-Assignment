@@ -22,7 +22,7 @@ data class GameUIState(
         pGrid = mutableListOf()
     ),
 
-    var gameBoard: Board = Board(gameBoard = (mutableListOf (mutableListOf(mutableListOf()))), freeGrid = 0, freeGridList = mutableSetOf())
+    var gameBoard: Board = Board(gameBoard = (mutableListOf (mutableListOf(mutableListOf()))), freeGrid = 0)
 
 )
 
