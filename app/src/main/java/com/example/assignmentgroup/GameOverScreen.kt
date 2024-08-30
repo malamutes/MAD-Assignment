@@ -28,7 +28,7 @@ fun GameOverScreen(playAgain: List<Pair<String, Boolean>>, player1: Player, play
             options -> GameOverButton(gameOver = options.first,
             onClick = {onNextButtonClicked(options.second)})
         }
-        Text(text = player1.playerScore.toString() + ":" + player2.playerScore.toString())
+        Text(text = player1.playerScore.toString() + ":" + player2.playerScore.toString(), fontSize = 100.sp)
     }
 }
 
@@ -46,7 +46,7 @@ fun GameOverButton(gameOver: String, onClick: () -> Unit){
     ) {
         Text(
             text = gameOver,
-            fontSize = 25.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Cursive
         )

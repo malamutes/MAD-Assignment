@@ -1,29 +1,42 @@
 package com.example.assignmentgroup
 
 import android.provider.ContactsContract.Data
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.recyclerviewcompose.R
+import com.example.ui.theme.bodyFontFamily
+import com.example.ui.theme.displayFontFamily
 
 enum class GameScreen(val title: String) {
     PlayerOrAI(title = "PlayerOrAI"),
@@ -41,6 +54,7 @@ enum class GameScreen(val title: String) {
 }
 
 
+
 /* navigation top bar which allows to go back if back navigation is possible */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,7 +65,11 @@ fun GameAppBar(
     modifier: Modifier = Modifier
 ){
     TopAppBar(
-        title = { Text(text = currentScreen.title) },
+        title = { Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+            Text(text = currentScreen.title, fontSize = 40.sp, fontWeight = FontWeight.Bold,
+                fontFamily = bodyFontFamily, modifier = Modifier, color = MaterialTheme.colorScheme.primary)
+
+        } },
         modifier = modifier,
         navigationIcon = {
             if(canNavigateBack)
@@ -67,6 +85,21 @@ fun GameAppBar(
     )
 }
 
+//@Composable
+//fun GameAppBarBottom(
+//    currentScreen: GameScreen,
+//    canNavigateBack: Boolean,
+//    navigateUp: () -> Unit,
+//    modifier: Modifier = Modifier
+//){
+//    BottomAppBar(
+//        actions = {
+//            IconButton(onClick = { navigateUp }) {
+//                Icon(Icons.Filled.ArrowBackIosNew, contentDescription = "Back", tint = MaterialTheme.colorScheme.errorContainer)
+//            }
+//         },
+//    )
+//}
 
 @Composable
 fun GameApp(
@@ -87,6 +120,11 @@ fun GameApp(
                 navigateUp = { navController.navigateUp() }
             )
         },
+//        bottomBar = {
+//            GameAppBarBottom(currentScreen = currentScreen,
+//                canNavigateBack = (navController.previousBackStackEntry != null),
+//                navigateUp = { navController.navigateUp() })
+//        }
     )
     { innerPadding ->
 

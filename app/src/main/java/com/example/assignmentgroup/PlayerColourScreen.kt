@@ -1,9 +1,14 @@
 package com.example.assignmentgroup
 
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
@@ -24,10 +29,16 @@ import androidx.compose.ui.unit.sp
 fun PlayerColourScreen(colorOption: List<Color>,
                        player: Player,
                        onNextButtonClicked: (Player) -> Unit){
-    LazyRow(modifier = Modifier.fillMaxHeight()) {
+//    LazyRow(modifier = Modifier.fillMaxHeight()) {
+//        items(colorOption) {
+//            colors -> DiscColourCard(colorOption = colors,
+//            onClick = { player.playerColor = colors; onNextButtonClicked(player) })
+//        }
+//    }
+    LazyVerticalGrid(columns = GridCells.Fixed(3), modifier = Modifier.height(1.dp)) {
         items(colorOption) {
             colors -> DiscColourCard(colorOption = colors,
-            onClick = { player.playerColor = colors; onNextButtonClicked(player) })
+            onClick = {player.playerColor = colors; onNextButtonClicked(player)})
         }
     }
 }
@@ -43,7 +54,8 @@ fun DiscColourCard(colorOption: Color, onClick: () -> Unit){
                 width = (LocalConfiguration.current.screenHeightDp * 0.25f).dp,
                 height = (LocalConfiguration.current.screenHeightDp * 0.25f).dp
             )
-            .padding(25.dp)) {
+            .aspectRatio(1f)
+            .padding(15.dp)) {
         Text(text = colorOption.toString(), fontSize = 25.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
     }
 }

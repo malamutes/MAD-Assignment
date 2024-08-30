@@ -36,10 +36,10 @@ fun SelectGridSizeButton(gridSizeOption: String, onClick: () -> Unit){
         shape = CircleShape,
         modifier = Modifier
             .size(
-                width = (LocalConfiguration.current.screenHeightDp * 0.2f).dp,
-                height = (LocalConfiguration.current.screenHeightDp * 0.2f).dp
+                width = (LocalConfiguration.current.screenHeightDp * 0.25f).dp,
+                height = (LocalConfiguration.current.screenHeightDp * 0.25f).dp
             )
             .padding(25.dp)) {
-        Text(text = gridSizeOption, fontSize = 15.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
+        Text(text = gridSizeOption, fontSize = 20.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
     }
 }

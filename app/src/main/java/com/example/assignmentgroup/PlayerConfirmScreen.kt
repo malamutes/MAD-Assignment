@@ -34,7 +34,9 @@ import androidx.compose.ui.unit.sp
 fun PlayerConfirmScreen(player1: Player, player2: Player,
                         onNextButtonClicked: () -> Unit){
 
-        Column(modifier = Modifier.padding(50.dp)) {
+        Column(modifier = Modifier.padding(50.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
             PlayerConfirm(avatar = player1.playerAvatar, name = player1.playerName, color = player1.playerColor) {}
             PlayerConfirm(avatar = player2.playerAvatar, name = player2.playerName, color = player2.playerColor) {}
             confirmButton(onClick = {onNextButtonClicked()})
@@ -50,7 +52,7 @@ fun PlayerConfirm(avatar: Int, name: String, color: Color,  onClick: () -> Unit)
         .border(
             width = 2.5.dp,
             color = MaterialTheme.colorScheme.scrim,
-            shape = MaterialTheme.shapes.extraSmall
+            shape = MaterialTheme.shapes.extraSmall,
         )
         .background(color = Color.Black),
         horizontalArrangement = Arrangement.spacedBy(25.dp)) {
@@ -77,10 +79,9 @@ fun confirmButton(onClick: () -> Unit){
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = Color.White),
         modifier = Modifier
-            .size(
-                width = (LocalConfiguration.current.screenHeightDp * 0.25f).dp,
-                height = (LocalConfiguration.current.screenHeightDp * 0.25f).dp
-            )
+            .offset(y= 25.dp)
+            .size((LocalConfiguration.current.screenHeightDp * 0.15f).dp)
+            .aspectRatio(1.5f)
             .padding(1.dp)) {
         Text(text = "Confirm", fontSize = 25.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
     }
