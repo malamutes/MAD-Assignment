@@ -1,4 +1,4 @@
-package com.example.assignmentpaul
+package com.example.assignmentgroup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,33 +14,43 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+
 @Composable
-fun GridSizeScreen(gridSizeOptions: List<Pair<String, Int>>,
-                   onNextButtonClicked: (Int) -> Unit) {
+fun PlayerOrAIScreen(playerOrAiOption: List<Pair<String, Boolean>>,
+                     onNextButtonClicked: (Boolean) -> Unit){
+    println("ASUDHAUIHDSUIHISH")
     Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally , modifier = Modifier
         .padding(50.dp)
         .fillMaxSize()) {
-        gridSizeOptions.forEach {
-            options -> SelectGridSizeButton(gridSizeOption = options.first,
-                onClick = { onNextButtonClicked(options.second) })
+        playerOrAiOption.forEach() {
+            options -> PlayerOrAIButton(playerVsAiOption = options.first,
+            onClick = {onNextButtonClicked(options.second)})
         }
     }
 }
 
 @Composable
-fun SelectGridSizeButton(gridSizeOption: String, onClick: () -> Unit){
-    Button(onClick = onClick,
+fun PlayerOrAIButton(playerVsAiOption: String, onClick: () -> Unit){
+    Button(
+        onClick = onClick,
         shape = CircleShape,
         modifier = Modifier
             .size(
-                width = (LocalConfiguration.current.screenHeightDp * 0.2f).dp,
-                height = (LocalConfiguration.current.screenHeightDp * 0.2f).dp
+                width = (LocalConfiguration.current.screenHeightDp * 0.25f).dp,
+                height = (LocalConfiguration.current.screenHeightDp * 0.25f).dp
             )
-            .padding(25.dp)) {
-        Text(text = gridSizeOption, fontSize = 15.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
+            .padding(25.dp)
+    ) {
+        Text(
+            text = playerVsAiOption,
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Cursive
+        )
     }
 }
+
+

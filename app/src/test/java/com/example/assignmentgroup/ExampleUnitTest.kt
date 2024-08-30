@@ -1,4 +1,4 @@
-package com.example.assignmentpaul
+package com.example.assignmentgroup
 
 import org.junit.Test
 

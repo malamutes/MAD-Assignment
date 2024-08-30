@@ -1,4 +1,4 @@
-package com.example.assignmentpaul
+package com.example.assignmentgroup
 
 import androidx.compose.ui.graphics.Color
 import com.example.recyclerviewcompose.R
@@ -6,8 +6,8 @@ import com.example.recyclerviewcompose.R
 object DataSource {
     val gridSizeOptions = listOf<Pair<String, Int>>(
         Pair("Standard (7X6)", 0),
-        Pair("Small (6X5)", 0),
-        Pair("Large (8X7)", 0)
+        Pair("Small (6X5)", 1),
+        Pair("Large (8X7)", 2)
     )
 
     val colorOptions = listOf<Color>(
@@ -36,5 +36,10 @@ object DataSource {
         R.drawable.jinx,
         R.drawable.silco,
         R.drawable.lucy,
+    )
+
+    val playAgain = listOf<Pair<String, Boolean>>(
+        Pair("MAINMENU", false),
+        Pair("PLAYAGAIN", true)
     )
 }
