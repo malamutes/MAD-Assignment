@@ -211,7 +211,6 @@ fun GameApp(
                                         {
                                             navController.navigate(GameScreen.GamePlayingAI.name)
                                         }
-                                    }
                 )
             }
 
@@ -232,6 +231,7 @@ fun GameApp(
                         {
                             navController.navigate(GameScreen.GameOverScreen.name)
                         }
+
                     })
             }
             composable(route = GameScreen.GamePlayingAI.name){
@@ -249,6 +249,7 @@ fun GameApp(
                         {
                             navController.navigate(GameScreen.GameOverScreen.name)
                         }
+                        
                     })
             }
             composable(route = GameScreen.GameOverScreen.name){

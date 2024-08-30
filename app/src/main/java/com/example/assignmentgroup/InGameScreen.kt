@@ -48,6 +48,7 @@ fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
 
     LazyVerticalGrid(columns = GridCells.Fixed(boardGrid[0].count()), modifier = Modifier.height(1.dp)
         /*tf this fixes it but doesnt even do anything*/) {
+      playerclasstry
         for(i in 0..boardGrid.count()-1)
         {
             for(j in 0..boardGrid[0].count()-1)
@@ -88,6 +89,10 @@ fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
                                 {
                                     gameOverOut = true
                                 }
+
+                                }
+                                println(playerOneGridTaken)
+
                                 onNextButtonClicked(listOf(gameBoard, player1, player2, gameOverOut))
                             }
                             else if(isPlayerOne == false)
@@ -176,13 +181,6 @@ fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
 
                             boardFreeGridList.remove(Pair(i, j))
 
-                            var aiPick = boardFreeGridList.random()
-
-
-                            boardGrid[aiPick.first][aiPick.second][1] = 2
-                            boardFreeGridList.remove(Pair(aiPick.first, aiPick.second))
-                            playerTwoGridTaken.add(boardGrid[aiPick.first][aiPick.second][0])
-
                             if(aiPick.first - 1 > -1)
                             {
                                 boardGrid[aiPick.first - 1][aiPick.second][1] = 0
@@ -193,6 +191,8 @@ fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
                             {
                                 gameOverOut = true
                                 player1.updateScore()
+
+
                             }
                             else if((gameBoard.consecutiveCheckers(playerTwoGridTaken, gameBoard.boardGrid[0].count()) == true))
                             {
@@ -203,6 +203,12 @@ fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
                             {
                                 gameOverOut = true
                             }
+                           
+                            var aiPick = boardFreeGridList.random()
+                            
+                            boardGrid[aiPick.first][aiPick.second][1] = 2
+                            boardFreeGridList.remove(Pair(aiPick.first, aiPick.second))
+                            playerTwoGridTaken.add(boardGrid[aiPick.first][aiPick.second][0])
 
                             println(boardFreeGridList)
                             println(aiPick)
