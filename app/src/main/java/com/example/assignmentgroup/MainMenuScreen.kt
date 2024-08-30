@@ -72,7 +72,7 @@ fun GameAppBar(
 fun GameApp(
     viewModel: GameViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     navController: NavHostController = rememberNavController()
-    ){
+){
 //    println("asdadasd")  /* to do with very first composable i have */
     /*recomposing multiple times so printing multiple times */
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -202,15 +202,16 @@ fun GameApp(
                     viewModel.setIsGridMade(true)
                 }
                 PlayerConfirmScreen(player1 = uiState.playerOne, player2 = uiState.playerTwo,
-                                    onNextButtonClicked = {
-                                        if(uiState.vsPlayer == true)
-                                        {
-                                            navController.navigate(GameScreen.GamePlaying.name)
-                                        }
-                                        else if(uiState.vsPlayer == false)
-                                        {
-                                            navController.navigate(GameScreen.GamePlayingAI.name)
-                                        }
+                    onNextButtonClicked = {
+                        if(uiState.vsPlayer == true)
+                        {
+                            navController.navigate(GameScreen.GamePlaying.name)
+                        }
+                        else if(uiState.vsPlayer == false)
+                        {
+                            navController.navigate(GameScreen.GamePlayingAI.name)
+                        }
+                    }
                 )
             }
 
@@ -231,7 +232,6 @@ fun GameApp(
                         {
                             navController.navigate(GameScreen.GameOverScreen.name)
                         }
-
                     })
             }
             composable(route = GameScreen.GamePlayingAI.name){
@@ -249,7 +249,6 @@ fun GameApp(
                         {
                             navController.navigate(GameScreen.GameOverScreen.name)
                         }
-                        
                     })
             }
             composable(route = GameScreen.GameOverScreen.name){
