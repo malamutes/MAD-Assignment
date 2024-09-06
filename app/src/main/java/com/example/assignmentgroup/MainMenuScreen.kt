@@ -53,8 +53,6 @@ enum class GameScreen(val title: String) {
     GameOverScreen(title = "GameOver")
 }
 
-
-
 /* navigation top bar which allows to go back if back navigation is possible */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,13 +61,24 @@ fun GameAppBar(
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier
-){
+) {
     TopAppBar(
-        title = { Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-            Text(text = currentScreen.title, fontSize = 40.sp, fontWeight = FontWeight.Bold,
-                fontFamily = bodyFontFamily, modifier = Modifier, color = MaterialTheme.colorScheme.primary)
-
-        } },
+        title = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = currentScreen.title,
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = bodyFontFamily,
+                    modifier = Modifier,
+                    color = MaterialTheme.colorScheme.primary
+                )
+             }
+        },
         modifier = modifier,
         navigationIcon = {
             if(canNavigateBack)
@@ -105,7 +114,7 @@ fun GameAppBar(
 fun GameApp(
     viewModel: GameViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     navController: NavHostController = rememberNavController()
-){
+) {
 //    println("asdadasd")  /* to do with very first composable i have */
     /*recomposing multiple times so printing multiple times */
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -138,29 +147,32 @@ fun GameApp(
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
         ) {
-            composable(route = GameScreen.PlayerOrAI.name){
+            composable(route = GameScreen.PlayerOrAI.name) {
                 PlayerOrAIScreen(
                     playerOrAiOption = DataSource.playerOrAIOptions,
                     onNextButtonClicked = {
                         viewModel.setPlayerVsAI(it) /* referencing DataSource initial options struct */
-                        navController.navigate(GameScreen.GridSize.name)}
+                        navController.navigate(GameScreen.GridSize.name)
+                    }
                 )
             }
-            composable(route = GameScreen.GridSize.name){
+
+            composable(route = GameScreen.GridSize.name) {
                 GridSizeScreen(
                     gridSizeOptions = DataSource.gridSizeOptions,
                     onNextButtonClicked = {
                         viewModel.setGridSize(it)
-                        navController.navigate(GameScreen.PlayerOneColour.name)}
+                        navController.navigate(GameScreen.PlayerOneColour.name)
+                    }
                 )
             }
-            composable(route = GameScreen.PlayerOneColour.name){
+
+            composable(route = GameScreen.PlayerOneColour.name) {
                 PlayerColourScreen(
                     colorOption = DataSource.colorOptions,
                     player = uiState.playerOne,
                     onNextButtonClicked = {
-                        if(viewModel.uiState.value.vsPlayer == true)
-                        {
+                        if(viewModel.uiState.value.vsPlayer) {
                             /*if there are two players then set first player go to second and from second go next screen
                             this ensures nav path always works correctnly (i think) as it is always
                              prev -> firplayer -> secplayer -> next
@@ -168,15 +180,15 @@ fun GameApp(
                             viewModel.updatePlayerOne(it)
                             navController.navigate(GameScreen.PlayerTwoColour.name)
                         }
-                        else if(viewModel.uiState.value.vsPlayer == false)
-                        {
+                        else if(!viewModel.uiState.value.vsPlayer) {
                             viewModel.updatePlayerOne(it)
                             navController.navigate(GameScreen.PlayerOneName.name)
                         }
                     }
                 )
             }
-            composable(route = GameScreen.PlayerTwoColour.name){
+
+            composable(route = GameScreen.PlayerTwoColour.name) {
                 PlayerColourScreen(
                     colorOption = DataSource.colorOptions,
                     player = uiState.playerTwo,
@@ -186,75 +198,101 @@ fun GameApp(
                     }
                 )
             }
-            composable(route = GameScreen.PlayerOneName.name){
-                PlayerNameScreen(playerName = uiState.playerOne.playerName, player = uiState.playerOne, onNextButtonClicked = {
-                    if(viewModel.uiState.value.vsPlayer == true)
-                    {
-                        viewModel.updatePlayerOne(it)
-                        navController.navigate(GameScreen.PlayerTwoName.name)
+
+            composable(route = GameScreen.PlayerOneName.name) {
+                PlayerNameScreen(
+                    playerName = uiState.playerOne.playerName,
+                    player = uiState.playerOne,
+                    onNextButtonClicked = {
+                        if(viewModel.uiState.value.vsPlayer)
+                        {
+                            viewModel.updatePlayerOne(it)
+                            navController.navigate(GameScreen.PlayerTwoName.name)
+                        }
+                        else if(!viewModel.uiState.value.vsPlayer)
+                        {
+                            viewModel.updatePlayerOne(it)
+                            navController.navigate(GameScreen.PlayerOneAvatar.name)
+                        }
                     }
-                    else if(viewModel.uiState.value.vsPlayer == false)
-                    {
-                        viewModel.updatePlayerOne(it)
-                        navController.navigate(GameScreen.PlayerOneAvatar.name)
-                    }
-                })
+                )
             }
-            composable(route = GameScreen.PlayerTwoName.name){
-                PlayerNameScreen(playerName = uiState.playerTwo.playerName, player = uiState.playerTwo,
+            composable(route = GameScreen.PlayerTwoName.name) {
+                PlayerNameScreen(
+                    playerName = uiState.playerTwo.playerName,
+                    player = uiState.playerTwo,
                     onNextButtonClicked = {
                         viewModel.updatePlayerTwo(it)
                         navController.navigate(GameScreen.PlayerOneAvatar.name)
                     }
                 )
             }
-            composable(route = GameScreen.PlayerOneAvatar.name){
-                PlayerAvatarScreen(avatar = DataSource.avatarImages, player = uiState.playerOne, onNextButtonClicked = {
-                    if(viewModel.uiState.value.vsPlayer == true)
-                    {
-                        viewModel.updatePlayerOne(it)
-                        navController.navigate(GameScreen.PlayerTwoAvatar.name)
+
+            composable(route = GameScreen.PlayerOneAvatar.name) {
+                PlayerAvatarScreen(
+                    avatar = DataSource.avatarImages,
+                    player = uiState.playerOne,
+                    onNextButtonClicked = {
+                        if(viewModel.uiState.value.vsPlayer)
+                        {
+                            viewModel.updatePlayerOne(it)
+                            navController.navigate(GameScreen.PlayerTwoAvatar.name)
+                        }
+                        else if(!viewModel.uiState.value.vsPlayer)
+                        {
+                            viewModel.updatePlayerOne(it)
+                            /* making ai with random customizations */
+                            viewModel.updatePlayerTwo(
+                                Player(
+                                    pColor = DataSource.colorOptions.random(),
+                                    pName = "AI",
+                                    pAvatar = DataSource.avatarImages.random(),
+                                    pScore = 0,
+                                    pGrid = mutableListOf()
+                                ),
+                            )
+                            navController.navigate(GameScreen.PlayerConfirm.name)
+                        }
                     }
-                    else if(viewModel.uiState.value.vsPlayer == false)
-                    {
-                        viewModel.updatePlayerOne(it)
-                        /* making ai with random customizations */
-                        viewModel.updatePlayerTwo(Player(pColor = DataSource.colorOptions.random(),
-                            pName = "AI", pAvatar = DataSource.avatarImages.random(), pScore = 0, pGrid = mutableListOf()), )
+                )
+            }
+
+            composable(route = GameScreen.PlayerTwoAvatar.name) {
+                PlayerAvatarScreen(
+                    avatar = DataSource.avatarImages,
+                    player = uiState.playerTwo,
+                    onNextButtonClicked = {
+                        viewModel.updatePlayerTwo(it)
                         navController.navigate(GameScreen.PlayerConfirm.name)
                     }
-                })
+                )
             }
 
-            composable(route = GameScreen.PlayerTwoAvatar.name){
-                PlayerAvatarScreen(avatar = DataSource.avatarImages, player = uiState.playerTwo, onNextButtonClicked = {
-                    viewModel.updatePlayerTwo(it)
-                    navController.navigate(GameScreen.PlayerConfirm.name)
-                })
-            }
-
-            composable(route = GameScreen.PlayerConfirm.name){
-                if(uiState.isGridMade == false)
-                {
+            composable(route = GameScreen.PlayerConfirm.name) {
+                if(!uiState.isGridMade) {
                     viewModel.updateBoard(viewModel.initGridState(uiState.gridSizeScreen))
                     viewModel.setIsGridMade(true)
                 }
-                PlayerConfirmScreen(player1 = uiState.playerOne, player2 = uiState.playerTwo,
+                PlayerConfirmScreen(
+                    player1 = uiState.playerOne,
+                    player2 = uiState.playerTwo,
                     onNextButtonClicked = {
-                        if(uiState.vsPlayer == true)
-                        {
+                        if(uiState.vsPlayer) {
                             navController.navigate(GameScreen.GamePlaying.name)
                         }
-                        else if(uiState.vsPlayer == false)
-                        {
+                        else if(!uiState.vsPlayer) {
                             navController.navigate(GameScreen.GamePlayingAI.name)
                         }
                     }
                 )
             }
 
-            composable(route = GameScreen.GamePlaying.name){
-                inGameScreen(isPlayerOne = uiState.isPlayerOne, gameBoard = uiState.gameBoard, player1 = uiState.playerOne, player2 = uiState.playerTwo,
+            composable(route = GameScreen.GamePlaying.name) {
+                inGameScreen(
+                    isPlayerOne = uiState.isPlayerOne,
+                    gameBoard = uiState.gameBoard,
+                    player1 = uiState.playerOne,
+                    player2 = uiState.playerTwo,
                     onNextButtonClicked = { /* need to type cast as an ANY list is returned from button click */
                         viewModel.updateBoard(it[0] as Board)
                         viewModel.updatePlayerOne(it[1] as Player)
@@ -262,34 +300,37 @@ fun GameApp(
 
                         viewModel.setIsPlayerOne(!uiState.isPlayerOne)
 
-                        if(it[3] == false)
-                        {
+                        if(it[3] == false) {
                             navController.navigate(GameScreen.GamePlaying.name)
                         }
-                        else if(it[3] == true)
-                        {
+                        else if(it[3] == true) {
                             navController.navigate(GameScreen.GameOverScreen.name)
                         }
-                    })
+                    }
+                )
             }
-            composable(route = GameScreen.GamePlayingAI.name){
-                inGameScreenAI(gameBoard = uiState.gameBoard, player1 = uiState.playerOne, player2 = uiState.playerTwo,
+
+            composable(route = GameScreen.GamePlayingAI.name) {
+                inGameScreenAI(
+                    gameBoard = uiState.gameBoard,
+                    player1 = uiState.playerOne,
+                    player2 = uiState.playerTwo,
                     onNextButtonClicked = { /* need to type cast as an ANY list is returned from button click */
                         viewModel.updateBoard(it[0] as Board)
                         viewModel.updatePlayerOne(it[1] as Player)
                         viewModel.updatePlayerTwo(it[2] as Player)
 
-                        if(it[3] == false)
-                        {
+                        if(it[3] == false) {
                             navController.navigate(GameScreen.GamePlayingAI.name)
                         }
-                        else if(it[3] == true)
-                        {
+                        else if(it[3] == true) {
                             navController.navigate(GameScreen.GameOverScreen.name)
                         }
-                    })
+                    }
+                )
             }
-            composable(route = GameScreen.GameOverScreen.name){
+
+            composable(route = GameScreen.GameOverScreen.name) {
                 GameOverScreen(
                     playAgain = DataSource.playAgain,
                     player1 = uiState.playerOne,
@@ -301,23 +342,24 @@ fun GameApp(
                         uiState.gameBoard.boardFreeGrid = 0
                         uiState.gameBoard.boardGrid.clear()
 
-                        if(it == true)
-                        {
+                        if(it == true) {
                             navController.navigate(GameScreen.PlayerConfirm.name)
                         }
-                        else if(it == false)
-                        {
+                        else if(it == false) {
                             /* need to implement return to main menu immediately with path */
                             navController.navigate(GameScreen.PlayerOrAI.name)
                         }
-                    })
+                    }
+                )
             }
-            composable(route = GameScreen.PlayerOrAI.name){
+
+            composable(route = GameScreen.PlayerOrAI.name) {
                 PlayerOrAIScreen(
                     playerOrAiOption = DataSource.playerOrAIOptions,
                     onNextButtonClicked = {
                         viewModel.setPlayerVsAI(it) /* referencing DataSource initial options struct */
-                        navController.navigate(GameScreen.GridSize.name)}
+                        navController.navigate(GameScreen.GridSize.name)
+                    }
                 )
             }
         }

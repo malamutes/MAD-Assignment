@@ -20,8 +20,7 @@ object DataSource {
         Color(0xFF00FFFF),
         Color(0xFFF9DB22),
         Color(0xFF000000),
-        Color(0xFF298b28),
-
+        Color(0xFF298b28)
     )
 
     val playerOrAIOptions = listOf<Pair<String, Boolean>>(

@@ -20,20 +20,27 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun GameOverScreen(playAgain: List<Pair<String, Boolean>>, player1: Player, player2: Player,
-                     onNextButtonClicked: (Boolean) -> Unit){
-    Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally , modifier = Modifier
-        .padding(50.dp)
-        .fillMaxSize()) {
+                     onNextButtonClicked: (Boolean) -> Unit) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .padding(50.dp)
+            .fillMaxSize()
+    ) {
         playAgain.forEach() {
             options -> GameOverButton(gameOver = options.first,
             onClick = {onNextButtonClicked(options.second)})
         }
-        Text(text = player1.playerScore.toString() + ":" + player2.playerScore.toString(), fontSize = 100.sp)
+        Text(
+            text = player1.playerScore.toString() + ":" + player2.playerScore.toString(),
+            fontSize = 100.sp
+        )
     }
 }
 
 @Composable
-fun GameOverButton(gameOver: String, onClick: () -> Unit){
+fun GameOverButton(gameOver: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         shape = CircleShape,

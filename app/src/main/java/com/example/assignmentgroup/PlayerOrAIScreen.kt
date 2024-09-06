@@ -22,20 +22,26 @@ import com.example.ui.theme.displayFontFamily
 
 @Composable
 fun PlayerOrAIScreen(playerOrAiOption: List<Pair<String, Boolean>>,
-                     onNextButtonClicked: (Boolean) -> Unit){
+                     onNextButtonClicked: (Boolean) -> Unit) {
     println("ASUDHAUIHDSUIHISH")
-    Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally , modifier = Modifier
-        .padding(50.dp)
-        .fillMaxSize()) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .padding(50.dp)
+            .fillMaxSize()
+    ) {
         playerOrAiOption.forEach() {
-            options -> PlayerOrAIButton(playerVsAiOption = options.first,
-            onClick = {onNextButtonClicked(options.second)})
+            options -> PlayerOrAIButton(
+                playerVsAiOption = options.first,
+                onClick = { onNextButtonClicked(options.second) }
+            )
         }
     }
 }
 
 @Composable
-fun PlayerOrAIButton(playerVsAiOption: String, onClick: () -> Unit){
+fun PlayerOrAIButton(playerVsAiOption: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         shape = CircleShape,

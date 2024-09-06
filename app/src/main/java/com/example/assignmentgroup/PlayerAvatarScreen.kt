@@ -31,18 +31,27 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerAvatarScreen(avatar: List<Int>, player: Player, onNextButtonClicked: (Player) -> Unit){
+fun PlayerAvatarScreen(avatar: List<Int>, player: Player, onNextButtonClicked: (Player) -> Unit) {
 
 //    LazyRow(modifier = Modifier.fillMaxHeight()) {
 //        items(avatar) {
 //                avatar -> PlayerAvatar(avatar, onClick = {player.playerAvatar = avatar; onNextButtonClicked(player)})
 //        }
 //    }
-    LazyVerticalGrid(columns = GridCells.Fixed(2), modifier = Modifier.height(1.dp),
-        verticalArrangement = Arrangement.spacedBy(50.dp)) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier
+            .height(1.dp),
+        verticalArrangement = Arrangement.spacedBy(50.dp)
+    ) {
         items(avatar) {
-                avatar -> PlayerAvatar(avatar = avatar,
-            onClick = {player.playerAvatar = avatar; onNextButtonClicked(player)})
+            avatar -> PlayerAvatar(
+                avatar = avatar,
+                onClick = {
+                    player.playerAvatar = avatar;
+                    onNextButtonClicked(player)
+                }
+            )
         }
     }
 }
@@ -82,15 +91,22 @@ fun PlayerAvatar(avatar: Int, onClick: () -> Unit) {
                 .clip(CircleShape)
             /* .clickable {}*/
         )
-        Button(onClick = onClick,
+        Button(
+            onClick = onClick,
             shape = CircleShape,
             modifier = Modifier
                 .size(
                     width = (LocalConfiguration.current.screenHeightDp * 0.105f).dp,
                     height = (LocalConfiguration.current.screenHeightDp * 0.105f).dp
                 )
-                .padding(25.dp)) {
-            Text(text = "✓", fontSize = 25.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
+                .padding(25.dp)
+        ) {
+            Text(
+                text = "✓",
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Cursive
+            )
         }
     }
 }

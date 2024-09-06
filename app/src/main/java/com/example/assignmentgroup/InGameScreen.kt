@@ -37,7 +37,7 @@ var avatarImages2 = listOf(
 
 @Composable
 fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player2: Player,
-                 onNextButtonClicked: (List<Any>) -> Unit){ /* dunno if any is an abuse see if theres better ways later on */
+                 onNextButtonClicked: (List<Any>) -> Unit) { /* dunno if any is an abuse see if theres better ways later on */
 
     var boardGrid = gameBoard.boardGrid
     var boardFreeGrid = gameBoard.boardFreeGrid
@@ -46,21 +46,21 @@ fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
 
     var gameOverOut = false
 
-    LazyVerticalGrid(columns = GridCells.Fixed(boardGrid[0].count()), modifier = Modifier.height(1.dp)
-        /*tf this fixes it but doesnt even do anything*/) {
-        for(i in 0..boardGrid.count()-1)
-        {
-            for(j in 0..boardGrid[0].count()-1)
-            {
-                if(boardGrid[i][j][1] == 1)/* occupied by player 1*/
-                {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(boardGrid[0].count()),
+        modifier = Modifier
+                .height(1.dp)
+        /*tf this fixes it but doesnt even do anything*/
+    ) {
+        for(i in 0..< boardGrid.count()) {
+            for(j in 0..< boardGrid[0].count()) {
+                if(boardGrid[i][j][1] == 1)/* occupied by player 1*/ {
                     items(1) { element ->
                         cardPlayerRender(player1.playerColor, onClick = { })
                     }
                 }
 
-                else if(boardGrid[i][j][1] == 2)/* occupied by player 1*/
-                {
+                else if(boardGrid[i][j][1] == 2)/* occupied by player 1*/ {
                     items(1) { element ->
                         cardPlayerRender(player2.playerColor, onClick = { })
                     }
@@ -71,41 +71,38 @@ fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
                     items(1) { element ->
                         cardDefaultRender(element = boardGrid[i][j][0], onClick = {
                             boardFreeGrid -= 1
-                            if(isPlayerOne == true)
-                            {
+                            if(isPlayerOne) {
                                 playerOneGridTaken.add(boardGrid[i][j][0])
                                 boardGrid[i][j][1] = 1
-                                if(i - 1 > -1)
-                                {
+
+                                if(i - 1 > -1) {
                                     boardGrid[i - 1][j][1] = 0
                                 }
-                                if((gameBoard.consecutiveCheckers(playerOneGridTaken, gameBoard.boardGrid[0].count()) == true))
-                                {
+
+                                if((gameBoard.consecutiveCheckers(playerOneGridTaken, gameBoard.boardGrid[0].count()) == true)) {
                                     gameOverOut = true
                                     player1.updateScore()
                                 }
-                                else if(gameBoard.boardFreeGrid == 0)
-                                {
+                                else if(gameBoard.boardFreeGrid == 0) {
                                     gameOverOut = true
                                 }
                                 onNextButtonClicked(listOf(gameBoard, player1, player2, gameOverOut))
                             }
-                            else if(isPlayerOne == false)
-                            {
+
+                            else if(!isPlayerOne) {
                                 playerTwoGridTaken.add(boardGrid[i][j][0])
                                 boardGrid[i][j][1] = 2
-                                if(i - 1 > -1)
-                                {
+
+                                if(i - 1 > -1) {
                                     boardGrid[i - 1][j][1] = 0
                                 }
-                                if((gameBoard.consecutiveCheckers(playerTwoGridTaken, gameBoard.boardGrid[0].count()) == true))
-                                {
+
+                                if(gameBoard.consecutiveCheckers(playerTwoGridTaken, gameBoard.boardGrid[0].count())) {
                                     gameOverOut = true
                                     player2.updateScore()
                                 }
 
-                                else if(gameBoard.boardFreeGrid == 0)
-                                {
+                                else if(gameBoard.boardFreeGrid == 0) {
                                     gameOverOut = true
                                 }
                                 onNextButtonClicked(listOf(gameBoard, player1, player2, gameOverOut))
@@ -113,8 +110,7 @@ fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
                         })
                     }
                 }
-                else if(boardGrid[i][j][1] == -1) /* locked circle to be occupied */
-                {
+                else if(boardGrid[i][j][1] == -1) /* locked circle to be occupied */ {
                     items(1) { element ->
                         cardMagentaRender(element = boardGrid[i][j][0], onClick = {})
                     }
@@ -127,7 +123,7 @@ fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
 
 @Composable
 fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
-                   onNextButtonClicked: (List<Any>) -> Unit){ /* dunno if any is an abuse see if theres better ways later on */
+                   onNextButtonClicked: (List<Any>) -> Unit) { /* dunno if any is an abuse see if theres better ways later on */
 
     var boardGrid = gameBoard.boardGrid
     var boardFreeGrid = gameBoard.boardFreeGrid
@@ -138,21 +134,21 @@ fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
 
     var gameOverOut = false
 
-    LazyVerticalGrid(columns = GridCells.Fixed(boardGrid[0].count()), modifier = Modifier.height(1.dp)
-        /*tf this fixes it but doesnt even do anything*/) {
-        for(i in 0..boardGrid.count()-1)
-        {
-            for(j in 0..boardGrid[0].count()-1)
-            {
-                if(boardGrid[i][j][1] == 1)/* occupied by player 1*/
-                {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(boardGrid[0].count()),
+        modifier = Modifier
+            .height(1.dp)
+        /*tf this fixes it but doesnt even do anything*/
+    ) {
+        for(i in 0..boardGrid.count()-1) {
+            for(j in 0..boardGrid[0].count()-1) {
+                if(boardGrid[i][j][1] == 1)/* occupied by player 1*/ {
                     items(1) { element ->
                         cardPlayerRender(player1.playerColor, onClick = { })
                     }
                 }
 
-                else if(boardGrid[i][j][1] == 2)/* occupied by player 1*/
-                {
+                else if(boardGrid[i][j][1] == 2)/* occupied by player 1*/ {
                     items(1) { element ->
                         cardPlayerRender(Color.Red, onClick = { })
                     }
@@ -168,8 +164,7 @@ fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
                             playerOneGridTaken.add(boardGrid[i][j][0])
                             boardGrid[i][j][1] = 1
 
-                            if(i - 1 > -1)
-                            {
+                            if(i - 1 > -1) {
                                 boardGrid[i - 1][j][1] = 0
                                 boardFreeGridList.add(Pair(i - 1, j))
                             }
@@ -178,29 +173,24 @@ fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
 
                             var aiPick = boardFreeGridList.random()
 
-
                             boardGrid[aiPick.first][aiPick.second][1] = 2
                             boardFreeGridList.remove(Pair(aiPick.first, aiPick.second))
                             playerTwoGridTaken.add(boardGrid[aiPick.first][aiPick.second][0])
 
-                            if(aiPick.first - 1 > -1)
-                            {
+                            if(aiPick.first - 1 > -1) {
                                 boardGrid[aiPick.first - 1][aiPick.second][1] = 0
                                 boardFreeGridList.add(Pair(aiPick.first - 1, aiPick.second))
                             }
 
-                            if((gameBoard.consecutiveCheckers(playerOneGridTaken, gameBoard.boardGrid[0].count()) == true))
-                            {
+                            if((gameBoard.consecutiveCheckers(playerOneGridTaken, gameBoard.boardGrid[0].count()) == true)) {
                                 gameOverOut = true
                                 player1.updateScore()
                             }
-                            else if((gameBoard.consecutiveCheckers(playerTwoGridTaken, gameBoard.boardGrid[0].count()) == true))
-                            {
+                            else if((gameBoard.consecutiveCheckers(playerTwoGridTaken, gameBoard.boardGrid[0].count()) == true)) {
                                 gameOverOut = true
                                 player1.updateScore()
                             }
-                            else if(gameBoard.boardFreeGrid == 0)
-                            {
+                            else if(gameBoard.boardFreeGrid == 0) {
                                 gameOverOut = true
                             }
 
@@ -210,10 +200,9 @@ fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
                         })
                     }
                 }
-                else if(boardGrid[i][j][1] == -1) /* locked circle to be occupied */
-                {
+                else if(boardGrid[i][j][1] == -1) /* locked circle to be occupied */ {
                     items(1) { element ->
-                        cardMagentaRender(element = boardGrid[i][j][0], onClick = {})
+                        cardMagentaRender(element = boardGrid[i][j][0], onClick = { })
                     }
                 }
             }
@@ -224,39 +213,60 @@ fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
 
 
 @Composable
-fun cardDefaultRender(element: Int, onClick: () -> Unit){
-    Button(onClick = onClick,
+fun cardDefaultRender(element: Int, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan),
         modifier = Modifier
             .aspectRatio(1f)
             .size(50.dp)
-            .padding(1.dp)) {
-        Text(text = element.toString(), fontSize = 1.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
+            .padding(1.dp)
+    ) {
+        Text(
+            text = element.toString(),
+            fontSize = 1.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Cursive
+        )
     }
 }
 
 @Composable
-fun cardMagentaRender(element: Int, onClick: () -> Unit){
-    Button(onClick = onClick,
+fun cardMagentaRender(element: Int, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = Color.Magenta),
         modifier = Modifier
             .aspectRatio(1f)
             .size(50.dp)
-            .padding(1.dp)) {
-        Text(text = element.toString(), fontSize = 1.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
+            .padding(1.dp)
+    ) {
+        Text(
+            text = element.toString(),
+            fontSize = 1.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Cursive
+        )
     }
 }
 
 @Composable
-fun cardPlayerRender(color: Color, onClick: () -> Unit){
-    Button(onClick = { },
+fun cardPlayerRender(color: Color, onClick: () -> Unit) {
+    Button(
+        onClick = { },
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = color),
         modifier = Modifier
             .aspectRatio(1f)
-            .padding(1.dp)) {
-        Text(text = "1", fontSize = 25.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
+            .padding(1.dp)
+    ) {
+        Text(
+            text = "1",
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Cursive
+        )
     }
 }

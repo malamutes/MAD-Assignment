@@ -28,25 +28,33 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun PlayerColourScreen(colorOption: List<Color>,
                        player: Player,
-                       onNextButtonClicked: (Player) -> Unit){
+                       onNextButtonClicked: (Player) -> Unit) {
 //    LazyRow(modifier = Modifier.fillMaxHeight()) {
 //        items(colorOption) {
 //            colors -> DiscColourCard(colorOption = colors,
 //            onClick = { player.playerColor = colors; onNextButtonClicked(player) })
 //        }
 //    }
-    LazyVerticalGrid(columns = GridCells.Fixed(3), modifier = Modifier.height(1.dp)) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        modifier = Modifier
+            .height(1.dp)
+    ) {
         items(colorOption) {
             colors -> DiscColourCard(colorOption = colors,
-            onClick = {player.playerColor = colors; onNextButtonClicked(player)})
+            onClick = {
+                player.playerColor = colors;
+                onNextButtonClicked(player)
+            })
         }
     }
 }
 
 
 @Composable
-fun DiscColourCard(colorOption: Color, onClick: () -> Unit){
-    Button(onClick = onClick,
+fun DiscColourCard(colorOption: Color, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = colorOption),
         modifier = Modifier
@@ -55,7 +63,13 @@ fun DiscColourCard(colorOption: Color, onClick: () -> Unit){
                 height = (LocalConfiguration.current.screenHeightDp * 0.25f).dp
             )
             .aspectRatio(1f)
-            .padding(15.dp)) {
-        Text(text = colorOption.toString(), fontSize = 25.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
+            .padding(15.dp)
+    ) {
+        Text(
+            text = colorOption.toString(),
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Cursive
+        )
     }
 }

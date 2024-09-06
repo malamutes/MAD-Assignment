@@ -20,26 +20,40 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun GridSizeScreen(gridSizeOptions: List<Pair<String, Int>>,
                    onNextButtonClicked: (Int) -> Unit) {
-    Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally , modifier = Modifier
-        .padding(50.dp)
-        .fillMaxSize()) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally ,
+        modifier = Modifier
+            .padding(50.dp)
+            .fillMaxSize()
+    ) {
         gridSizeOptions.forEach {
-            options -> SelectGridSizeButton(gridSizeOption = options.first,
-                onClick = { onNextButtonClicked(options.second) })
+            options -> SelectGridSizeButton(
+                gridSizeOption = options.first,
+                onClick = {
+                    onNextButtonClicked(options.second)
+                })
         }
     }
 }
 
 @Composable
 fun SelectGridSizeButton(gridSizeOption: String, onClick: () -> Unit){
-    Button(onClick = onClick,
+    Button(
+        onClick = onClick,
         shape = CircleShape,
         modifier = Modifier
             .size(
                 width = (LocalConfiguration.current.screenHeightDp * 0.25f).dp,
                 height = (LocalConfiguration.current.screenHeightDp * 0.25f).dp
             )
-            .padding(25.dp)) {
-        Text(text = gridSizeOption, fontSize = 20.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
+            .padding(25.dp)
+    ) {
+        Text(
+            text = gridSizeOption,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Cursive
+        )
     }
 }

@@ -5,7 +5,7 @@ class Board(gameBoard: MutableList<MutableList<MutableList<Int>>>, freeGrid: Int
     var boardFreeGrid = freeGrid
     var boardFreeGridList = freeGridList
 
-    fun consecutiveCheckers(grisTaken: MutableList<Int>, columnNumber: Int): Boolean{
+    fun consecutiveCheckers(grisTaken: MutableList<Int>, columnNumber: Int): Boolean {
 
         for(i in grisTaken)
         { /*horizontal win */

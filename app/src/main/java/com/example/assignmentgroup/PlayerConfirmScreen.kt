@@ -32,30 +32,36 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun PlayerConfirmScreen(player1: Player, player2: Player,
-                        onNextButtonClicked: () -> Unit){
+                        onNextButtonClicked: () -> Unit) {
 
-        Column(modifier = Modifier.padding(50.dp),
+        Column(
+            modifier = Modifier
+                .padding(50.dp),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally) {
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             PlayerConfirm(avatar = player1.playerAvatar, name = player1.playerName, color = player1.playerColor) {}
             PlayerConfirm(avatar = player2.playerAvatar, name = player2.playerName, color = player2.playerColor) {}
-            confirmButton(onClick = {onNextButtonClicked()})
+            confirmButton(onClick = { onNextButtonClicked() })
         }
 }
 
 @Composable
 fun PlayerConfirm(avatar: Int, name: String, color: Color,  onClick: () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
-        .aspectRatio(2f)
-        .offset(y = (LocalConfiguration.current.screenHeightDp * 0.025f).dp)
-        .padding((LocalConfiguration.current.screenHeightDp * 0.01f).dp)
-        .border(
-            width = 2.5.dp,
-            color = MaterialTheme.colorScheme.scrim,
-            shape = MaterialTheme.shapes.extraSmall,
-        )
-        .background(color = Color.Black),
-        horizontalArrangement = Arrangement.spacedBy(25.dp)) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .aspectRatio(2f)
+            .offset(y = (LocalConfiguration.current.screenHeightDp * 0.025f).dp)
+            .padding((LocalConfiguration.current.screenHeightDp * 0.01f).dp)
+            .border(
+                width = 2.5.dp,
+                color = MaterialTheme.colorScheme.scrim,
+                shape = MaterialTheme.shapes.extraSmall,
+            )
+            .background(color = Color.Black),
+        horizontalArrangement = Arrangement.spacedBy(25.dp)
+    ) {
         Image(
             painter = painterResource(id = avatar),
             contentDescription = name,
@@ -75,7 +81,8 @@ fun PlayerConfirm(avatar: Int, name: String, color: Color,  onClick: () -> Unit)
 
 @Composable
 fun confirmButton(onClick: () -> Unit){
-    Button(onClick = onClick,
+    Button(
+        onClick = onClick,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = Color.White),
         modifier = Modifier
@@ -83,6 +90,11 @@ fun confirmButton(onClick: () -> Unit){
             .size((LocalConfiguration.current.screenHeightDp * 0.15f).dp)
             .aspectRatio(1.5f)
             .padding(1.dp)) {
-        Text(text = "Confirm", fontSize = 25.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
+        Text(
+            text = "Confirm",
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Cursive
+        )
     }
 }

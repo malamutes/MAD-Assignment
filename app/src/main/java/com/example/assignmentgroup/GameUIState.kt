@@ -12,17 +12,27 @@ data class GameUIState(
 //    val freeGrids: MutableList<Int> = mutableListOf(),
 
     /*initial players */
-    var playerOne: Player = Player(pColor = Color.Red,
-        pName = "Enter your name", pAvatar = R.drawable.vik, pScore = 0,
+    var playerOne: Player = Player(
+        pColor = Color.Red,
+        pName = "Enter your name",
+        pAvatar = R.drawable.vik,
+        pScore = 0,
         pGrid = mutableListOf()
     ),
 
-    var playerTwo: Player = Player(pColor = Color.Blue,
-        pName = "Enter your name", pAvatar = R.drawable.silco, pScore = 0,
+    var playerTwo: Player = Player(
+        pColor = Color.Blue,
+        pName = "Enter your name",
+        pAvatar = R.drawable.silco,
+        pScore = 0,
         pGrid = mutableListOf()
     ),
 
-    var gameBoard: Board = Board(gameBoard = (mutableListOf (mutableListOf(mutableListOf()))), freeGrid = 0, freeGridList = mutableSetOf())
+    var gameBoard: Board = Board(
+        gameBoard = (mutableListOf (mutableListOf(mutableListOf()))),
+        freeGrid = 0,
+        freeGridList = mutableSetOf()
+    )
 
 )
 

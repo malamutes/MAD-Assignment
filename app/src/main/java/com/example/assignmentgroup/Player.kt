@@ -9,8 +9,7 @@ class Player(pColor: Color, pName: String, pAvatar: Int, pScore: Int, pGrid: Mut
     var playerScore = pScore
     var playerGrid = pGrid
 
-    fun updateScore()
-    {
+    fun updateScore() {
         playerScore += 1
     }
 }

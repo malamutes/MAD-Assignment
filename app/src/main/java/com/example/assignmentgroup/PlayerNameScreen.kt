@@ -22,17 +22,33 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerNameScreen(playerName: String, player: Player, onNextButtonClicked: (Player) -> Unit){
+fun PlayerNameScreen(playerName: String, player: Player, onNextButtonClicked: (Player) -> Unit) {
     var playerNameOut by remember { mutableStateOf(playerName) }
-    Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-        TextField(value = playerNameOut, onValueChange = {playerNameOut = it},
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TextField(
+            value = playerNameOut,
+            onValueChange = {playerNameOut = it},
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center, fontSize = 35.sp),
+            modifier = Modifier
+                .size(250.dp, 300.dp)) /* make it adapt to screen size */
 
-            modifier = Modifier.size(250.dp, 300.dp)) /* make it adapt to screen size */
-
-        Button(onClick = { player.playerName = playerNameOut; onNextButtonClicked(player) },
-            modifier = Modifier.size(200.dp).aspectRatio(2f)) {
-            Text(text = "Enter", textAlign = TextAlign.Center, fontSize = 25.sp)
+        Button(
+            onClick = {
+                player.playerName = playerNameOut
+                onNextButtonClicked(player)
+            },
+            modifier = Modifier
+                .size(200.dp)
+                .aspectRatio(2f)
+        ) {
+            Text(
+                text = "Enter",
+                textAlign = TextAlign.Center,
+                fontSize = 25.sp
+            )
         }
     }
 }
