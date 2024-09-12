@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun GameOverScreen(playAgain: List<Pair<String, Boolean>>, player1: Player, player2: Player,
                      onNextButtonClicked: (Boolean) -> Unit) {
+    // Resets the number of moves in the stat manager
+    InGameStatsManager.moves = 0
+
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,

@@ -14,7 +14,7 @@ data class GameUIState(
     /*initial players */
     var playerOne: Player = Player(
         pColor = Color.Red,
-        pName = "Enter your name",
+        pName = "Player 1",
         pAvatar = R.drawable.vik,
         pScore = 0,
         pGrid = mutableListOf()
@@ -22,7 +22,7 @@ data class GameUIState(
 
     var playerTwo: Player = Player(
         pColor = Color.Blue,
-        pName = "Enter your name",
+        pName = "Player 2",
         pAvatar = R.drawable.silco,
         pScore = 0,
         pGrid = mutableListOf()

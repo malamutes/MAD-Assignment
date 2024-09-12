@@ -1,10 +1,10 @@
 package com.example.assignmentgroup
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -15,11 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,9 +26,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.recyclerviewcompose.R
@@ -45,8 +45,9 @@ var avatarImages2 = listOf(
     R.drawable.lucy,
 )
 
-object InGameTurnManager {
+object InGameStatsManager {
     var playerOneTurn = true
+    var moves = 0
 }
 
 /* 2d matrix with list in each entry for index and state, so 3d matrix*/
@@ -56,6 +57,7 @@ object InGameTurnManager {
 fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player2: Player,
                  onNextButtonClicked: (List<Any>) -> Unit) { /* dunno if any is an abuse see if theres better ways later on */
 
+    val context = LocalContext.current
     var boardGrid = gameBoard.boardGrid
     var boardFreeGrid = gameBoard.boardFreeGrid
     var playerOneGridTaken = player1.playerGrid
@@ -63,15 +65,13 @@ fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
 
     var gameOverOut = false
 
-    Column(
-
-    ) {
+    Column {
         LazyVerticalGrid(
             columns = GridCells.Fixed(boardGrid[0].count()),
             modifier = Modifier
                 .height(1.dp)
                 .weight(1f)
-            /*tf this fixes it but doesnt even do anything*/
+            /*tf this fixes it but doesn't even do anything*/
         ) {
             for (i in 0..< boardGrid.count()) {
                 for (j in 0..< boardGrid[0].count()) {
@@ -90,7 +90,8 @@ fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
                             cardDefaultRender(element = boardGrid[i][j][0], onClick = {
                                 boardFreeGrid -= 1
                                 if (isPlayerOne) {
-                                    InGameTurnManager.playerOneTurn = false
+                                    InGameStatsManager.playerOneTurn = false
+                                    InGameStatsManager.moves++
                                     playerOneGridTaken.add(boardGrid[i][j][0])
                                     boardGrid[i][j][1] = 1
 
@@ -101,9 +102,11 @@ fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
                                     if ((gameBoard.consecutiveCheckers(playerOneGridTaken, gameBoard.boardGrid[0].count()))) {
                                         gameOverOut = true
                                         player1.updateScore()
+                                        Toast.makeText(context, "Player 1 Wins!", Toast.LENGTH_SHORT).show()
                                     }
                                     else if (gameBoard.boardFreeGrid == 0) {
                                         gameOverOut = true
+                                        Toast.makeText(context, "It's a Draw!", Toast.LENGTH_SHORT).show()
                                     }
                                     onNextButtonClicked(
                                         listOf(
@@ -115,7 +118,8 @@ fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
                                     )
                                 }
                                 else if (!isPlayerOne) {
-                                    InGameTurnManager.playerOneTurn = true
+                                    InGameStatsManager.playerOneTurn = true
+                                    InGameStatsManager.moves++
                                     playerTwoGridTaken.add(boardGrid[i][j][0])
                                     boardGrid[i][j][1] = 2
 
@@ -130,9 +134,11 @@ fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
                                     ) {
                                         gameOverOut = true
                                         player2.updateScore()
+                                        Toast.makeText(context, "Player 2 Wins!", Toast.LENGTH_SHORT).show()
                                     }
                                     else if (gameBoard.boardFreeGrid == 0) {
                                         gameOverOut = true
+                                        Toast.makeText(context, "It's a Draw!", Toast.LENGTH_SHORT).show()
                                     }
                                     onNextButtonClicked(
                                         listOf(
@@ -155,13 +161,22 @@ fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
             }
         }
 
+        Text(
+            text = "Moves: " + InGameStatsManager.moves,
+            fontSize = 25.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .padding(10.dp)
+        )
+
         Row (
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .fillMaxWidth(1f)
         ) {
-            displayAvatars(player1, player2)
+            DisplayAvatars(player1, player2)
         }
     }
 }
@@ -188,7 +203,7 @@ fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
             modifier = Modifier
                 .height(1.dp)
                 .weight(1f)
-            /*tf this fixes it but doesnt even do anything*/
+            /*tf this fixes it but doesn't even do anything*/
         ) {
             for(i in 0..< boardGrid.count()) {
                 for(j in 0..< boardGrid[0].count()) {
@@ -210,6 +225,7 @@ fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
 
                         items(1) { element ->
                             cardDefaultRender(element = boardGrid[i][j][0], onClick = {
+                                InGameStatsManager.moves++
                                 boardFreeGrid -= 1
                                 playerOneGridTaken.add(boardGrid[i][j][0])
                                 boardGrid[i][j][1] = 1
@@ -222,6 +238,7 @@ fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
                                 boardFreeGridList.remove(Pair(i, j))
 
                                 var aiPick = boardFreeGridList.random()
+                                InGameStatsManager.moves++
 
                                 boardGrid[aiPick.first][aiPick.second][1] = 2
                                 boardFreeGridList.remove(Pair(aiPick.first, aiPick.second))
@@ -265,7 +282,7 @@ fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
             modifier = Modifier
                 .fillMaxWidth(1f)
         ) {
-            displayAvatars(player1, player2)
+            DisplayAvatars(player1, player2)
         }
     }
 }
@@ -332,54 +349,59 @@ fun cardPlayerRender(color: Color, onClick: () -> Unit) {
 }
 
 @Composable
-fun displayAvatars(player1: Player, player2: Player) {
-    var avatar: Int = player1.playerAvatar
-    if (InGameTurnManager.playerOneTurn) {
-        Image(
-            painter = painterResource(id = avatar),
-            contentDescription = avatar.toString(),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .offset(x = 15.dp, y = 25.dp)
-                .size((LocalConfiguration.current.screenHeightDp * 0.20f).dp)
-                .clip(CircleShape)
-                .border(2.dp, player1.playerColor, CircleShape)
-        )
+fun DisplayAvatars(player1: Player, player2: Player) {
+    if (InGameStatsManager.playerOneTurn) {
+        PlayerTurnAvatarImage(player = player1)
+        NotPlayerTurnAvatarImage(player = player2)
+    }
+    else {
+        NotPlayerTurnAvatarImage(player = player1)
+        PlayerTurnAvatarImage(player = player2)
+    }
+}
 
-        avatar = player2.playerAvatar
+@Composable
+fun PlayerTurnAvatarImage(player: Player) {
+    Column (
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = player.playerName,
+            fontSize = 25.sp,
+            modifier = Modifier
+                .padding(5.dp)
+        )
         Image(
-            painter = painterResource(id = avatar),
-            contentDescription = avatar.toString(),
+            painter = painterResource(id = player.playerAvatar),
+            contentDescription = player.playerAvatar.toString(),
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .offset(x = 15.dp, y = 25.dp)
                 .size((LocalConfiguration.current.screenHeightDp * 0.20f).dp)
                 .clip(CircleShape)
+                .border(2.dp, player.playerColor, CircleShape)
             /* .clickable {}*/
         )
     }
-    else {
-        Image(
-            painter = painterResource(id = avatar),
-            contentDescription = avatar.toString(),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .offset(x = 15.dp, y = 25.dp)
-                .size((LocalConfiguration.current.screenHeightDp * 0.20f).dp)
-                .clip(CircleShape)
-        )
+}
 
-        avatar = player2.playerAvatar
+@Composable
+fun NotPlayerTurnAvatarImage(player: Player) {
+    Column (
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = player.playerName,
+            fontSize = 25.sp,
+            modifier = Modifier
+                .padding(5.dp)
+        )
         Image(
-            painter = painterResource(id = avatar),
-            contentDescription = avatar.toString(),
+            painter = painterResource(id = player.playerAvatar),
+            contentDescription = player.playerAvatar.toString(),
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .offset(x = 15.dp, y = 25.dp)
                 .size((LocalConfiguration.current.screenHeightDp * 0.20f).dp)
                 .clip(CircleShape)
-                .border(2.dp, player2.playerColor, CircleShape)
-            /* .clickable {}*/
         )
     }
 }
