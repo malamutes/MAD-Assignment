@@ -23,7 +23,6 @@ import com.example.ui.theme.displayFontFamily
 @Composable
 fun PlayerOrAIScreen(playerOrAiOption: List<Pair<String, Boolean>>,
                      onNextButtonClicked: (Boolean) -> Unit) {
-    println("ASUDHAUIHDSUIHISH")
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -42,6 +41,10 @@ fun PlayerOrAIScreen(playerOrAiOption: List<Pair<String, Boolean>>,
 
 @Composable
 fun PlayerOrAIButton(playerVsAiOption: String, onClick: () -> Unit) {
+    var fontSize = 25
+    if (playerVsAiOption == DataSource.playerOrAIOptions[0].first)
+        fontSize = 18
+
     Button(
         onClick = onClick,
         shape = CircleShape,
@@ -54,9 +57,9 @@ fun PlayerOrAIButton(playerVsAiOption: String, onClick: () -> Unit) {
     ) {
         Text(
             text = playerVsAiOption,
-            fontSize = 25.sp,
+            fontSize = fontSize.sp,
             fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Cursive
+            fontFamily = FontFamily.Serif
         )
     }
 }

@@ -85,6 +85,11 @@ fun cardDefaultRenderT(element: Int, onClick: () -> Unit){
             .aspectRatio(1f)
             .size(50.dp)
             .padding(1.dp)) {
-        Text(text = element.toString(), fontSize = 10.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
+        Text(
+            text = element.toString(),
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Serif
+        )
     }
 }

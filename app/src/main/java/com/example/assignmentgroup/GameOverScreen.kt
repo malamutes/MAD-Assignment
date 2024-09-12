@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -29,8 +30,10 @@ fun GameOverScreen(playAgain: List<Pair<String, Boolean>>, player1: Player, play
             .fillMaxSize()
     ) {
         playAgain.forEach() {
-            options -> GameOverButton(gameOver = options.first,
-            onClick = {onNextButtonClicked(options.second)})
+            options -> GameOverButton(
+                gameOver = options.first,
+                onClick = { onNextButtonClicked(options.second) }
+            )
         }
         Text(
             text = player1.playerScore.toString() + ":" + player2.playerScore.toString(),
@@ -43,7 +46,7 @@ fun GameOverScreen(playAgain: List<Pair<String, Boolean>>, player1: Player, play
 fun GameOverButton(gameOver: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        shape = CircleShape,
+        shape = RectangleShape,
         modifier = Modifier
             .size(
                 width = (LocalConfiguration.current.screenHeightDp * 0.25f).dp,
@@ -55,7 +58,7 @@ fun GameOverButton(gameOver: String, onClick: () -> Unit) {
             text = gameOver,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Cursive
+            fontFamily = FontFamily.Serif,
         )
     }
 }

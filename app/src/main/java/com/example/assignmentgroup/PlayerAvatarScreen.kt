@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -105,7 +106,7 @@ fun PlayerAvatar(avatar: Int, onClick: () -> Unit) {
                 text = "✓",
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Cursive
+                fontFamily = FontFamily.Serif
             )
         }
     }

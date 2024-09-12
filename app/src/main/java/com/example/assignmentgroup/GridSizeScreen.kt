@@ -53,7 +53,7 @@ fun SelectGridSizeButton(gridSizeOption: String, onClick: () -> Unit){
             text = gridSizeOption,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Cursive
+            fontFamily = FontFamily.Serif
         )
     }
 }

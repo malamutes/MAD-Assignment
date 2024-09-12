@@ -24,8 +24,8 @@ object DataSource {
     )
 
     val playerOrAIOptions = listOf<Pair<String, Boolean>>(
-        Pair("VSPLAYER", true),
-        Pair("VSAI", false),/* referenced by output of playervsai screen output to set boolean for ai or player flag*/
+        Pair("VS PLAYER", true),
+        Pair("VS AI", false),/* referenced by output of playervsai screen output to set boolean for ai or player flag*/
     )
 
     var avatarImages = listOf(
@@ -38,7 +38,7 @@ object DataSource {
     )
 
     val playAgain = listOf<Pair<String, Boolean>>(
-        Pair("MAINMENU", false),
-        Pair("PLAYAGAIN", true)
+        Pair("MAIN MENU", false),
+        Pair("PLAY AGAIN", true)
     )
 }

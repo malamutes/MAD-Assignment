@@ -69,7 +69,7 @@ fun DiscColourCard(colorOption: Color, onClick: () -> Unit) {
             text = colorOption.toString(),
             fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Cursive
+            fontFamily = FontFamily.Serif
         )
     }
 }

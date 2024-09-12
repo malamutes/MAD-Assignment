@@ -94,7 +94,7 @@ fun confirmButton(onClick: () -> Unit){
             text = "Confirm",
             fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Cursive
+            fontFamily = FontFamily.Serif
         )
     }
 }
