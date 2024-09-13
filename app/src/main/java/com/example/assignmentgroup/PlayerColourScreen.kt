@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerColourScreen(colorOption: List<Color>,
+fun PlayerColourScreen(colorOption: List<Pair<Color, String>>,
                        player: Player,
                        onNextButtonClicked: (Player) -> Unit) {
 //    LazyRow(modifier = Modifier.fillMaxHeight()) {
@@ -52,11 +52,11 @@ fun PlayerColourScreen(colorOption: List<Color>,
 
 
 @Composable
-fun DiscColourCard(colorOption: Color, onClick: () -> Unit) {
+fun DiscColourCard(colorOption: Pair<Color, String>, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         shape = CircleShape,
-        colors = ButtonDefaults.buttonColors(containerColor = colorOption),
+        colors = ButtonDefaults.buttonColors(containerColor = colorOption.first),
         modifier = Modifier
             .size(
                 width = (LocalConfiguration.current.screenHeightDp * 0.25f).dp,
@@ -66,8 +66,8 @@ fun DiscColourCard(colorOption: Color, onClick: () -> Unit) {
             .padding(15.dp)
     ) {
         Text(
-            text = colorOption.toString(),
-            fontSize = 25.sp,
+            text = colorOption.second,
+            fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Serif
         )

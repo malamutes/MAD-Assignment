@@ -49,20 +49,20 @@ class GameViewModel: ViewModel(){
         var freeGrid: Int = 0
         var gameState: MutableList<MutableList<MutableList<Int>>> = mutableListOf<MutableList<MutableList<Int>>>()
         if(gridSizeOptions == 0) { /* standard board 7 by 6 */
-            val row: Int = 7
-            val column: Int = 6
+            val row: Int = 6
+            val column: Int = 7
             buildRowsAndColumns(row, column, gameState)
             freeGrid = row * column
         }
         if(gridSizeOptions == 1) { /* small board 6 by 5 */
-            val row: Int = 6
-            val column: Int = 5
+            val row: Int = 5
+            val column: Int = 6
             buildRowsAndColumns(row, column, gameState)
             freeGrid = row * column
         }
         else if(gridSizeOptions == 2) { /* large board 8 by 7 */
-            val row: Int = 8
-            val column: Int = 7
+            val row: Int = 7
+            val column: Int = 8
             buildRowsAndColumns(row, column, gameState)
             freeGrid = row * column
         }

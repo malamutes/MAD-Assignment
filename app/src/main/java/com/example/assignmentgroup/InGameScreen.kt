@@ -1,6 +1,8 @@
 package com.example.assignmentgroup
 
 import android.content.Context
+import android.content.res.Configuration
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -8,22 +10,29 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -31,7 +40,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import com.example.recyclerviewcompose.R
 
@@ -65,24 +76,27 @@ fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
 
     var gameOverOut = false
 
-    Column {
+    Column (
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(boardGrid[0].count()),
             modifier = Modifier
                 .height(1.dp)
                 .weight(1f)
+                .fillMaxWidth((0.8f))
             /*tf this fixes it but doesn't even do anything*/
         ) {
             for (i in 0..< boardGrid.count()) {
                 for (j in 0..< boardGrid[0].count()) {
                     if (boardGrid[i][j][1] == 1)/* occupied by player 1*/ {
                         items(1) { element ->
-                            cardPlayerRender(player1.playerColor, onClick = { })
+                            cardPlayerRender(player1.playerColor.first, onClick = { })
                         }
                     }
                     else if (boardGrid[i][j][1] == 2)/* occupied by player 1*/ {
                         items(1) { element ->
-                            cardPlayerRender(player2.playerColor, onClick = { })
+                            cardPlayerRender(player2.playerColor.first, onClick = { })
                         }
                     }
                     else if (boardGrid[i][j][1] == 0) /* free circle to be occupied this is where core logic happens, the other if statements is just to render the existing game*/ {
@@ -178,6 +192,8 @@ fun inGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
         ) {
             DisplayAvatars(player1, player2)
         }
+
+        SettingsButtonRow()
     }
 }
 
@@ -195,9 +211,7 @@ fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
 
     var gameOverOut = false
 
-    Column(
-
-    ) {
+    Column {
         LazyVerticalGrid(
             columns = GridCells.Fixed(boardGrid[0].count()),
             modifier = Modifier
@@ -209,7 +223,7 @@ fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
                 for(j in 0..< boardGrid[0].count()) {
                     if(boardGrid[i][j][1] == 1)/* occupied by player 1*/ {
                         items(1) { element ->
-                            cardPlayerRender(player1.playerColor, onClick = { })
+                            cardPlayerRender(player1.playerColor.first, onClick = { })
                         }
                     }
 
@@ -284,6 +298,8 @@ fun inGameScreenAI(gameBoard: Board, player1: Player, player2: Player,
         ) {
             DisplayAvatars(player1, player2)
         }
+
+        SettingsButtonRow()
     }
 }
 
@@ -337,6 +353,7 @@ fun cardPlayerRender(color: Color, onClick: () -> Unit) {
         colors = ButtonDefaults.buttonColors(containerColor = color),
         modifier = Modifier
             .aspectRatio(1f)
+            .size(50.dp)
             .padding(1.dp)
     ) {
         Text(
@@ -376,9 +393,9 @@ fun PlayerTurnAvatarImage(player: Player) {
             contentDescription = player.playerAvatar.toString(),
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size((LocalConfiguration.current.screenHeightDp * 0.20f).dp)
+                .size((LocalConfiguration.current.screenWidthDp * 0.25f).dp)
                 .clip(CircleShape)
-                .border(2.dp, player.playerColor, CircleShape)
+                .border(2.dp, player.playerColor.first, CircleShape)
             /* .clickable {}*/
         )
     }
@@ -400,7 +417,109 @@ fun NotPlayerTurnAvatarImage(player: Player) {
             contentDescription = player.playerAvatar.toString(),
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size((LocalConfiguration.current.screenHeightDp * 0.20f).dp)
+                .size((LocalConfiguration.current.screenWidthDp * 0.25f).dp)
+                .clip(CircleShape)
+        )
+    }
+}
+
+@Composable
+fun SettingsButtonRow() {
+    Row (
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier
+            .fillMaxWidth(1f)
+    ) {
+        UndoButton()
+        ResetButton()
+        SettingsButton()
+        HomeButton()
+    }
+}
+
+@Composable
+fun UndoButton() {
+    Button(
+        onClick = {
+
+        },
+        colors = ButtonDefaults.buttonColors(Color.Transparent),
+        shape = CircleShape,
+        modifier = Modifier
+            .padding(1.dp)
+            .size((LocalConfiguration.current.screenWidthDp * 0.25f).dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.undobutton),
+            contentDescription = "Undo Button",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .clip(CircleShape)
+        )
+    }
+}
+
+@Composable
+fun ResetButton() {
+    Button(
+        onClick = {
+
+        },
+        colors = ButtonDefaults.buttonColors(Color.Transparent),
+        shape = CircleShape,
+        modifier = Modifier
+            .size((LocalConfiguration.current.screenWidthDp * 0.25f).dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.resetbutton),
+            contentDescription = "Undo Button",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .clip(CircleShape)
+        )
+    }
+}
+
+@Composable
+fun SettingsButton() {
+    Button(
+        onClick = {
+
+        },
+        colors = ButtonDefaults.buttonColors(Color.Transparent),
+        shape = CircleShape,
+        modifier = Modifier
+            .padding(1.dp)
+            .size((LocalConfiguration.current.screenWidthDp * 0.25f).dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.settingsimage),
+            contentDescription = "Undo Button",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .clip(CircleShape)
+        )
+    }
+}
+
+@Composable
+fun HomeButton() {
+    Button(
+        onClick = {
+
+        },
+        colors = ButtonDefaults.buttonColors(Color.Transparent),
+        shape = CircleShape,
+        modifier = Modifier
+            .padding(1.dp)
+            .size((LocalConfiguration.current.screenWidthDp * 0.25f).dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.homebutton),
+            contentDescription = "Undo Button",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
                 .clip(CircleShape)
         )
     }

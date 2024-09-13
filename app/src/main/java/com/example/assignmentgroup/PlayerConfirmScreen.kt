@@ -31,9 +31,7 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun PlayerConfirmScreen(player1: Player, player2: Player,
-                        onNextButtonClicked: () -> Unit) {
-
+fun PlayerConfirmScreen(player1: Player, player2: Player, onNextButtonClicked: () -> Unit) {
         Column(
             modifier = Modifier
                 .padding(50.dp),
@@ -42,12 +40,20 @@ fun PlayerConfirmScreen(player1: Player, player2: Player,
         ) {
             PlayerConfirm(avatar = player1.playerAvatar, name = player1.playerName, color = player1.playerColor) {}
             PlayerConfirm(avatar = player2.playerAvatar, name = player2.playerName, color = player2.playerColor) {}
+
+            Text(
+                text = player1.playerScore.toString() + ":" + player2.playerScore.toString(),
+                fontSize = 100.sp,
+                modifier = Modifier
+                    .padding(10.dp)
+            )
+
             confirmButton(onClick = { onNextButtonClicked() })
         }
 }
 
 @Composable
-fun PlayerConfirm(avatar: Int, name: String, color: Color,  onClick: () -> Unit) {
+fun PlayerConfirm(avatar: Int, name: String, color: Pair<Color, String>,  onClick: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -70,11 +76,11 @@ fun PlayerConfirm(avatar: Int, name: String, color: Color,  onClick: () -> Unit)
                 .offset(x = 10.dp)
                 .size((LocalConfiguration.current.screenHeightDp * 0.15f).dp)
                 .clip(CircleShape)
-                .border(BorderStroke(5.dp, color), shape = CircleShape)
+                .border(BorderStroke(5.dp, color.first), shape = CircleShape)
         )
         Column {
-            Text(text = name, color = color)
-            Text(text = color.toString(), color = color)
+            Text(text = name, color = color.first)
+            Text(text = color.second, color = color.first)
         }
     }
 }

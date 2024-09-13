@@ -13,7 +13,7 @@ data class GameUIState(
 
     /*initial players */
     var playerOne: Player = Player(
-        pColor = Color.Red,
+        pColor = Pair(Color.Red, "Red"),
         pName = "Player 1",
         pAvatar = R.drawable.vik,
         pScore = 0,
@@ -21,7 +21,7 @@ data class GameUIState(
     ),
 
     var playerTwo: Player = Player(
-        pColor = Color.Blue,
+        pColor = Pair(Color.Blue, "Blue"),
         pName = "Player 2",
         pAvatar = R.drawable.silco,
         pScore = 0,
