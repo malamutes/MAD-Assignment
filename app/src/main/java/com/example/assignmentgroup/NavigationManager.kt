@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -47,6 +48,7 @@ fun NavigationManager(viewModel: GameViewModel) {
             PlayerColourScreen(
                 colorOption = DataSource.colorOptions,
                 player = uiState.playerOne,
+                heading = "Choose Player One Colour",
                 onNextButtonClicked = {
                     if(viewModel.uiState.value.vsPlayer) {
                         viewModel.updatePlayerOne(it)
@@ -64,6 +66,7 @@ fun NavigationManager(viewModel: GameViewModel) {
             PlayerColourScreen(
                 colorOption = DataSource.colorOptions,
                 player = uiState.playerTwo,
+                heading = "Choose Player Two Colour",
                 onNextButtonClicked = {
                     viewModel.updatePlayerTwo(it)
                     navController.navigate(Routes.playerOneNameScreen)
@@ -75,6 +78,7 @@ fun NavigationManager(viewModel: GameViewModel) {
             PlayerNameScreen(
                 playerName = uiState.playerOne.playerName,
                 player = uiState.playerOne,
+                heading = "Choose Player One Name",
                 onNextButtonClicked = {
                     if(viewModel.uiState.value.vsPlayer)
                     {
@@ -93,6 +97,7 @@ fun NavigationManager(viewModel: GameViewModel) {
             PlayerNameScreen(
                 playerName = uiState.playerTwo.playerName,
                 player = uiState.playerTwo,
+                heading = "Choose Player Two Name",
                 onNextButtonClicked = {
                     viewModel.updatePlayerTwo(it)
                     navController.navigate(Routes.playerOneAvatarScreen)
@@ -104,6 +109,7 @@ fun NavigationManager(viewModel: GameViewModel) {
             PlayerAvatarScreen(
                 avatar = DataSource.avatarImages,
                 player = uiState.playerOne,
+                heading = "Choose Player One Avatar",
                 onNextButtonClicked = {
                     if(viewModel.uiState.value.vsPlayer)
                     {
@@ -133,6 +139,7 @@ fun NavigationManager(viewModel: GameViewModel) {
             PlayerAvatarScreen(
                 avatar = DataSource.avatarImages,
                 player = uiState.playerTwo,
+                heading = "Choose Player One Avatar",
                 onNextButtonClicked = {
                     viewModel.updatePlayerTwo(it)
                     navController.navigate(Routes.playerConfirmScreen)
@@ -160,11 +167,13 @@ fun NavigationManager(viewModel: GameViewModel) {
         }
 
         composable(route = Routes.gamePlayingPlayerScreen) {
-            inGameScreen(
+            InGameScreen(
                 isPlayerOne = uiState.isPlayerOne,
                 gameBoard = uiState.gameBoard,
                 player1 = uiState.playerOne,
                 player2 = uiState.playerTwo,
+                navController = navController,
+                viewModel = viewModel,
                 onNextButtonClicked = { /* need to type cast as an ANY list is returned from button click */
                     viewModel.updateBoard(it[0] as Board)
                     viewModel.updatePlayerOne(it[1] as Player)
@@ -183,10 +192,12 @@ fun NavigationManager(viewModel: GameViewModel) {
         }
 
         composable(route = Routes.gamePlayingAIScreen) {
-            inGameScreenAI(
+            InGameScreenAI(
                 gameBoard = uiState.gameBoard,
                 player1 = uiState.playerOne,
                 player2 = uiState.playerTwo,
+                navController = navController,
+                viewModel = viewModel,
                 onNextButtonClicked = { /* need to type cast as an ANY list is returned from button click */
                     viewModel.updateBoard(it[0] as Board)
                     viewModel.updatePlayerOne(it[1] as Player)
@@ -207,22 +218,108 @@ fun NavigationManager(viewModel: GameViewModel) {
                 playAgain = DataSource.playAgain,
                 player1 = uiState.playerOne,
                 player2 = uiState.playerTwo,
-                onNextButtonClicked = {
-                    uiState.playerOne.playerGrid.clear()
-                    uiState.playerTwo.playerGrid.clear()
-                    viewModel.setIsGridMade(false)
-                    uiState.gameBoard.boardFreeGrid = 0
-                    uiState.gameBoard.boardGrid.clear()
+                mainMenuOnClick = {
+                    resetBoard(viewModel, uiState)
+                    navController.navigate(Routes.playerOrAIScreen)
+                },
+                replayOnClick = {
+                    resetBoard(viewModel, uiState)
+                    navController.navigate(Routes.playerConfirmScreen)
+                }
+            )
+        }
 
-                    if(it) {
-                        navController.navigate(Routes.playerConfirmScreen)
-                    }
-                    else {
-                        /* need to implement return to main menu immediately with path */
-                        navController.navigate(Routes.gamePlayingAIScreen)
-                    }
+        composable(route = Routes.settingsScreen) {
+            InGameSettings(
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+
+        composable(route = Routes.p1NameToSettings) {
+            PlayerNameScreen(
+                playerName = uiState.playerOne.playerName,
+                player = uiState.playerOne,
+                heading = "Choose Player One Name",
+                onNextButtonClicked = {
+                    viewModel.updatePlayerOne(it)
+                    navController.navigate(Routes.settingsScreen)
+                }
+            )
+        }
+
+        composable(route = Routes.p1AvatarToSettings) {
+            PlayerAvatarScreen(
+                avatar = DataSource.avatarImages,
+                player = uiState.playerOne,
+                heading = "Choose Player One Avatar",
+                onNextButtonClicked = {
+                    viewModel.updatePlayerOne(it)
+                    navController.navigate(Routes.settingsScreen)
+                }
+            )
+        }
+
+        composable(route = Routes.p1ColourToSettings) {
+            PlayerColourScreen(
+                colorOption = DataSource.colorOptions,
+                player = uiState.playerOne,
+                heading = "Choose Player One Colour",
+                onNextButtonClicked = {
+                    viewModel.updatePlayerOne(it)
+                    navController.navigate(Routes.settingsScreen)
+                }
+            )
+        }
+
+        composable(route = Routes.p2NameToSettings) {
+            PlayerNameScreen(
+                playerName = uiState.playerTwo.playerName,
+                player = uiState.playerTwo,
+                heading = "Choose Player Two Name",
+                onNextButtonClicked = {
+                    viewModel.updatePlayerTwo(it)
+                    navController.navigate(Routes.settingsScreen)
+                }
+            )
+        }
+
+        composable(route = Routes.p2AvatarToSettings) {
+            PlayerAvatarScreen(
+                avatar = DataSource.avatarImages,
+                player = uiState.playerTwo,
+                heading = "Choose Player Two Avatar",
+                onNextButtonClicked = {
+                    viewModel.updatePlayerTwo(it)
+                    navController.navigate(Routes.settingsScreen)
+                }
+            )
+        }
+
+        composable(route = Routes.p2ColourToSettings) {
+            PlayerColourScreen(
+                colorOption = DataSource.colorOptions,
+                player = uiState.playerTwo,
+                heading = "Choose Player Two Colour",
+                onNextButtonClicked = {
+                    viewModel.updatePlayerTwo(it)
+                    navController.navigate(Routes.settingsScreen)
                 }
             )
         }
     }
+}
+
+fun resetBoard(viewModel: GameViewModel, uiState: GameUIState) {
+    uiState.playerOne.playerGrid.clear()
+    uiState.playerTwo.playerGrid.clear()
+    viewModel.setIsGridMade(false)
+    uiState.gameBoard.boardFreeGrid = 0
+    uiState.gameBoard.boardGrid.clear()
+    viewModel.setIsPlayerOne(true)
+    InGameStatsManager.moves = 0
+    InGameStatsManager.playerOneTurn = true
+    viewModel.updateBoard(viewModel.initGridState(uiState.gridSizeScreen))
+    viewModel.setIsGridMade(true)
+    MoveQueue.moveQueue = mutableListOf()
 }

@@ -1,7 +1,13 @@
 package com.example.assignmentgroup
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,40 +20,57 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerColourScreen(colorOption: List<Pair<Color, String>>,
-                       player: Player,
-                       onNextButtonClicked: (Player) -> Unit) {
-//    LazyRow(modifier = Modifier.fillMaxHeight()) {
-//        items(colorOption) {
-//            colors -> DiscColourCard(colorOption = colors,
-//            onClick = { player.playerColor = colors; onNextButtonClicked(player) })
-//        }
-//    }
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
+fun PlayerColourScreen(colorOption: List<Pair<Color, String>>, player: Player, heading: String, onNextButtonClicked: (Player) -> Unit) {
+    Surface (
         modifier = Modifier
-            .height(1.dp)
+            .fillMaxSize(1f),
+        color = Color(0xFF101111)
     ) {
-        items(colorOption) {
-            colors -> DiscColourCard(colorOption = colors,
-            onClick = {
-                player.playerColor = colors;
-                onNextButtonClicked(player)
-            })
+        Column {
+            Text (
+                text = heading,
+                textAlign = TextAlign.Center,
+                color = Color.LightGray,
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Serif,
+                modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .padding(0.dp, 60.dp, 0.dp, 5.dp)
+            )
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                verticalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                items(colorOption) { colors -> DiscColourCard(
+                    colorOption = colors,
+                    onClick = {
+                        player.playerColor = colors;
+                        onNextButtonClicked(player)
+                    }
+                ) }
+            }
         }
     }
+
 }
 
 
@@ -59,17 +82,29 @@ fun DiscColourCard(colorOption: Pair<Color, String>, onClick: () -> Unit) {
         colors = ButtonDefaults.buttonColors(containerColor = colorOption.first),
         modifier = Modifier
             .size(
-                width = (LocalConfiguration.current.screenHeightDp * 0.25f).dp,
-                height = (LocalConfiguration.current.screenHeightDp * 0.25f).dp
+                width = (LocalConfiguration.current.screenWidthDp * 0.25f).dp,
+                height = (LocalConfiguration.current.screenWidthDp * 0.25f).dp
             )
+            .padding(15.dp, 15.dp)
             .aspectRatio(1f)
-            .padding(15.dp)
     ) {
-        Text(
-            text = colorOption.second,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Serif
-        )
+        if (colorOption.second == "Purple" || colorOption.second == "Black") {
+            Text(
+                text = colorOption.second,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Serif,
+                color = Color.LightGray
+            )
+        }
+        else {
+            Text(
+                text = colorOption.second,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Serif,
+                color = Color.Black
+            )
+        }
     }
 }
