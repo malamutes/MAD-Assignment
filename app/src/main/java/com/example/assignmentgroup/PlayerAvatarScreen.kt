@@ -38,7 +38,15 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerAvatarScreen(avatar: List<Int>, player: Player, heading: String, onNextButtonClicked: (Player) -> Unit) {
+fun PlayerAvatarScreen(avatar: List<Int>, player: Player, heading: String, portrait: Boolean, onNextButtonClicked: (Player) -> Unit) {
+    var columnNumber = 6
+    if (portrait)
+        columnNumber = 2
+
+    var textTopPadding = 10.dp
+    if (portrait)
+        textTopPadding = 60.dp
+
     Surface (
         modifier = Modifier
             .fillMaxSize(1f),
@@ -54,11 +62,11 @@ fun PlayerAvatarScreen(avatar: List<Int>, player: Player, heading: String, onNex
                 fontFamily = FontFamily.Serif,
                 modifier = Modifier
                     .fillMaxWidth(1f)
-                    .padding(0.dp, 60.dp, 0.dp, 5.dp)
+                    .padding(0.dp, textTopPadding, 0.dp, 5.dp)
             )
 
             LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
+                columns = GridCells.Fixed(columnNumber),
                 modifier = Modifier
                     .weight(1f),
                 verticalArrangement = Arrangement.spacedBy(50.dp)
@@ -66,6 +74,7 @@ fun PlayerAvatarScreen(avatar: List<Int>, player: Player, heading: String, onNex
                 items(avatar) { avatar ->
                     PlayerAvatar(
                         avatar = avatar,
+                        portrait = portrait,
                         onClick = {
                             player.playerAvatar = avatar;
                             onNextButtonClicked(player)
@@ -78,7 +87,11 @@ fun PlayerAvatarScreen(avatar: List<Int>, player: Player, heading: String, onNex
 }
 
 @Composable
-fun PlayerAvatar(avatar: Int, onClick: () -> Unit) {
+fun PlayerAvatar(avatar: Int, portrait: Boolean, onClick: () -> Unit) {
+    var size = (LocalConfiguration.current.screenHeightDp * 0.20f).dp
+    if (!portrait)
+        size = (LocalConfiguration.current.screenWidthDp / 8f).dp
+
     Box {
         Image(
             painter = painterResource(id = avatar),
@@ -86,7 +99,7 @@ fun PlayerAvatar(avatar: Int, onClick: () -> Unit) {
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .offset(x = 15.dp, y = 25.dp)
-                .size((LocalConfiguration.current.screenHeightDp * 0.20f).dp)
+                .size(size)
                 .clip(CircleShape)
                 .clickable { onClick() }
         )

@@ -16,7 +16,9 @@ data class GameUIState(
         pColor = Pair(Color.Red, "Red"),
         pName = "Player 1",
         pAvatar = R.drawable.vik,
-        pScore = 0,
+        pWins = 0,
+        pLoses = 0,
+        pGamesPlayed = 0,
         pGrid = mutableListOf()
     ),
 
@@ -24,7 +26,9 @@ data class GameUIState(
         pColor = Pair(Color.Blue, "Blue"),
         pName = "Player 2",
         pAvatar = R.drawable.silco,
-        pScore = 0,
+        pWins = 0,
+        pLoses = 0,
+        pGamesPlayed = 0,
         pGrid = mutableListOf()
     ),
 

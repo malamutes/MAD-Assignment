@@ -13,14 +13,13 @@ object DataSource {
     val colorOptions = listOf<Pair<Color, String>>(
         Pair(Color(0xFFFFA500), "Orange"),
         Pair(Color(0xFFFFFFFF), "White"),
-        Pair(Color(0xFF421568), "Purple"),
-        Pair(Color(0xFFF500FF), "Pink"),
+        Pair(Color(0xFF702963), "Purple"),
         Pair(Color(0xFFBA1A1A), "Red"),
         Pair(Color(0xFFFFDAD6), "Pale Pink"),
-        Pair(Color(0xFF00FFFF), "Cyan"),
         Pair(Color(0xFFF9DB22), "Yellow"),
         Pair(Color(0xFF000000), "Black"),
-        Pair(Color(0xFF298b28), "Green")
+        Pair(Color(0xFF298b28), "Green"),
+        Pair(Color.Blue, "Blue")
     )
 
     val playerOrAIOptions = listOf<Pair<String, Boolean>>(

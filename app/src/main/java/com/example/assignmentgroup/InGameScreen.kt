@@ -7,7 +7,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -44,11 +46,10 @@ object InGameStatsManager {
     var moves = 0
 }
 
-data class MoveInfo(val pIIndex: Int, val pJIndex: Int,val pPrevious: Int, val pNew: Int) {
-    var iIndex = pIIndex;
-    var jIndex = pJIndex;
-    var previous = pPrevious;
-    var new = pNew;
+data class MoveInfo(val pIIndex: Int, val pJIndex: Int,val pPrevious: Int) {
+    var iIndex = pIIndex
+    var jIndex = pJIndex
+    var previous = pPrevious
 }
 
 object MoveQueue {
@@ -60,7 +61,7 @@ object MoveQueue {
 
 @Composable
 fun InGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player2: Player, navController: NavController, viewModel: GameViewModel, onNextButtonClicked: (List<Any>) -> Unit) { /* dunno if any is an abuse see if theres better ways later on */
-
+    val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val boardGrid = gameBoard.boardGrid
     val playerOneGridTaken = player1.playerGrid
@@ -114,20 +115,17 @@ fun InGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
                                         InGameStatsManager.playerOneTurn = false
                                         InGameStatsManager.moves++
                                         playerOneGridTaken.add(boardGrid[i][j][0])
-                                        MoveQueue.moveQueue.add(MoveInfo(i, j, boardGrid[i][j][1], 1))
+                                        MoveQueue.moveQueue.add(MoveInfo(i, j, boardGrid[i][j][1]))
                                         boardGrid[i][j][1] = 1
 
                                         if (i - 1 > -1) {
                                             boardGrid[i - 1][j][1] = 0
                                         }
 
-                                        if ((gameBoard.consecutiveCheckers(
-                                                playerOneGridTaken,
-                                                gameBoard.boardGrid[0].count()
-                                            ))
-                                        ) {
+                                        if ((gameBoard.consecutiveCheckers(gameBoard, 1))) {
                                             gameOverOut = true
-                                            player1.updateScore()
+                                            player1.updateScore(true)
+                                            player2.updateScore(false)
                                             Toast.makeText(
                                                 context,
                                                 "Player 1 Wins!",
@@ -153,32 +151,23 @@ fun InGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
                                         InGameStatsManager.playerOneTurn = true
                                         InGameStatsManager.moves++
                                         playerTwoGridTaken.add(boardGrid[i][j][0])
-                                        MoveQueue.moveQueue.add(MoveInfo(i, j, boardGrid[i][j][1], 2))
+                                        MoveQueue.moveQueue.add(MoveInfo(i, j, boardGrid[i][j][1]))
                                         boardGrid[i][j][1] = 2
 
                                         if (i - 1 > -1) {
                                             boardGrid[i - 1][j][1] = 0
                                         }
 
-                                        if (gameBoard.consecutiveCheckers(
-                                                playerTwoGridTaken,
-                                                gameBoard.boardGrid[0].count()
-                                            )
-                                        ) {
+                                        if (gameBoard.consecutiveCheckers(gameBoard, 2)) {
                                             gameOverOut = true
-                                            player2.updateScore()
-                                            Toast.makeText(
-                                                context,
-                                                "Player 2 Wins!",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+                                            player1.updateScore(false)
+                                            player2.updateScore(true)
+                                            Toast.makeText(context, "Player 2 Wins!", Toast.LENGTH_SHORT).show()
                                         } else if (gameBoard.boardFreeGrid == 0) {
                                             gameOverOut = true
-                                            Toast.makeText(
-                                                context,
-                                                "It's a Draw!",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+                                            Toast.makeText(context, "It's a Draw!", Toast.LENGTH_SHORT).show()
+                                            player1.draw()
+                                            player2.draw()
                                         }
                                         onNextButtonClicked(
                                             listOf(
@@ -218,7 +207,7 @@ fun InGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
                 modifier = Modifier
                     .fillMaxWidth(1f)
             ) {
-                DisplayAvatars(player1, player2)
+                DisplayAvatars(navController, uiState, player1, player2)
             }
 
             SettingsButtonRow(navController, viewModel, gameBoard, player1, player2)
@@ -229,7 +218,9 @@ fun InGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player
 
 @Composable
 fun InGameScreenAI(gameBoard: Board, player1: Player, player2: Player, navController: NavController, viewModel: GameViewModel, onNextButtonClicked: (List<Any>) -> Unit) {
+    val uiState by viewModel.uiState.collectAsState()
 
+    val context = LocalContext.current
     val boardGrid = gameBoard.boardGrid
     val playerOneGridTaken = player1.playerGrid
     val playerTwoGridTaken = player2.playerGrid
@@ -264,7 +255,6 @@ fun InGameScreenAI(gameBoard: Board, player1: Player, player2: Player, navContro
                     .height(1.dp)
                     .weight(1f)
                     .fillMaxWidth((0.8f))
-                /*tf this fixes it but doesn't even do anything*/
             ) {
                 for (i in 0..<boardGrid.count()) {
                     for (j in 0..<boardGrid[0].count()) {
@@ -274,7 +264,7 @@ fun InGameScreenAI(gameBoard: Board, player1: Player, player2: Player, navContro
                             }
                         } else if (boardGrid[i][j][1] == 2)/* occupied by player 1*/ {
                             items(1) {
-                                CardPlayerRender(Color.Red)
+                                CardPlayerRender(player2.playerColor.first)
                             }
                         } else if (boardGrid[i][j][1] == 0) {
                             boardFreeGridList.add(Pair(i, j))
@@ -284,7 +274,7 @@ fun InGameScreenAI(gameBoard: Board, player1: Player, player2: Player, navContro
                                     InGameStatsManager.moves++
                                     gameBoard.boardFreeGrid -= 1
                                     playerOneGridTaken.add(boardGrid[i][j][0])
-                                    MoveQueue.moveQueue.add(MoveInfo(i, j, boardGrid[i][j][1], 1))
+                                    MoveQueue.moveQueue.add(MoveInfo(i, j, boardGrid[i][j][1]))
                                     boardGrid[i][j][1] = 1
 
                                     if (i - 1 > -1) {
@@ -297,7 +287,7 @@ fun InGameScreenAI(gameBoard: Board, player1: Player, player2: Player, navContro
                                     val aiPick = boardFreeGridList.random()
                                     InGameStatsManager.moves++
 
-                                    MoveQueue.moveQueue.add(MoveInfo(i, j, boardGrid[i][j][1], 1))
+                                    MoveQueue.moveQueue.add(MoveInfo(aiPick.first, aiPick.second, boardGrid[aiPick.first][aiPick.second][1]))
                                     boardGrid[aiPick.first][aiPick.second][1] = 2
                                     boardFreeGridList.remove(Pair(aiPick.first, aiPick.second))
                                     playerTwoGridTaken.add(boardGrid[aiPick.first][aiPick.second][0])
@@ -307,22 +297,23 @@ fun InGameScreenAI(gameBoard: Board, player1: Player, player2: Player, navContro
                                         boardFreeGridList.add(Pair(aiPick.first - 1, aiPick.second))
                                     }
 
-                                    if ((gameBoard.consecutiveCheckers(
-                                            playerOneGridTaken,
-                                            gameBoard.boardGrid[0].count()
-                                        ))
-                                    ) {
+                                    if ((gameBoard.consecutiveCheckers(gameBoard, 1))) {
                                         gameOverOut = true
-                                        player1.updateScore()
-                                    } else if ((gameBoard.consecutiveCheckers(
-                                            playerTwoGridTaken,
-                                            gameBoard.boardGrid[0].count()
-                                        ))
-                                    ) {
+                                        Toast.makeText(context, "Player One Wins!", Toast.LENGTH_SHORT).show()
+                                        player1.updateScore(true)
+                                        player2.updateScore(false)
+                                    }
+                                    else if ((gameBoard.consecutiveCheckers(gameBoard, 2))) {
                                         gameOverOut = true
-                                        player1.updateScore()
-                                    } else if (gameBoard.boardFreeGrid == 0) {
+                                        player1.updateScore(false)
+                                        Toast.makeText(context, "Player 2 Wins!", Toast.LENGTH_SHORT).show()
+                                        player2.updateScore(true)
+                                    }
+                                    else if (gameBoard.boardFreeGrid == 0) {
                                         gameOverOut = true
+                                        Toast.makeText(context, "It's a Draw!", Toast.LENGTH_SHORT).show()
+                                        player1.draw()
+                                        player2.draw()
                                     }
 
                                     onNextButtonClicked(
@@ -362,7 +353,7 @@ fun InGameScreenAI(gameBoard: Board, player1: Player, player2: Player, navContro
                 modifier = Modifier
                     .fillMaxWidth(1f)
             ) {
-                DisplayAvatars(player1, player2)
+                DisplayAvatars(navController, uiState, player1, player2)
             }
 
             SettingsButtonRow(navController, viewModel, gameBoard, player1, player2)
@@ -433,19 +424,19 @@ fun CardPlayerRender(color: Color) {
 }
 
 @Composable
-fun DisplayAvatars(player1: Player, player2: Player) {
+fun DisplayAvatars(navController: NavController, uiState: GameUIState, player1: Player, player2: Player) {
     if (InGameStatsManager.playerOneTurn) {
-        PlayerTurnAvatarImage(player = player1)
-        NotPlayerTurnAvatarImage(player = player2)
+        PlayerTurnAvatarImage(navController = navController, player = player1, uiState = uiState, isPlayerOne = true)
+        NotPlayerTurnAvatarImage(navController = navController, player = player2, uiState = uiState, isPlayerOne = false)
     }
     else {
-        NotPlayerTurnAvatarImage(player = player1)
-        PlayerTurnAvatarImage(player = player2)
+        NotPlayerTurnAvatarImage(navController = navController, player = player1, uiState = uiState, isPlayerOne = true)
+        PlayerTurnAvatarImage(navController = navController, player = player2, uiState = uiState, isPlayerOne = false)
     }
 }
 
 @Composable
-fun PlayerTurnAvatarImage(player: Player) {
+fun PlayerTurnAvatarImage(navController: NavController, uiState: GameUIState, player: Player, isPlayerOne: Boolean) {
     Column (
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -456,8 +447,17 @@ fun PlayerTurnAvatarImage(player: Player) {
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Serif,
             modifier = Modifier
-                .padding(0.dp, (LocalConfiguration.current.screenWidthDp * 0.04f).dp)
+                .clickable {
+                    if (isPlayerOne)
+                        navController.navigate(Routes.p1NameToInGame)
+                    else
+                        if (uiState.vsPlayer)
+                            navController.navigate(Routes.p2NameToInGame)
+                }
         )
+
+        WinLoseGamesPlayedText(player = player)
+
         Image(
             painter = painterResource(id = player.playerAvatar),
             contentDescription = player.playerAvatar.toString(),
@@ -466,12 +466,19 @@ fun PlayerTurnAvatarImage(player: Player) {
                 .size((LocalConfiguration.current.screenWidthDp * 0.25f).dp)
                 .clip(CircleShape)
                 .border(2.dp, player.playerColor.first, CircleShape)
+                .clickable {
+                    if (isPlayerOne)
+                        navController.navigate(Routes.p1AvatarToInGame)
+                    else
+                        if (uiState.vsPlayer)
+                            navController.navigate(Routes.p2AvatarToInGame)
+                }
         )
     }
 }
 
 @Composable
-fun NotPlayerTurnAvatarImage(player: Player) {
+fun NotPlayerTurnAvatarImage(navController: NavController, uiState: GameUIState, player: Player, isPlayerOne: Boolean) {
     Column (
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -482,8 +489,17 @@ fun NotPlayerTurnAvatarImage(player: Player) {
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Serif,
             modifier = Modifier
-                .padding(0.dp, (LocalConfiguration.current.screenWidthDp * 0.04f).dp)
+                .clickable {
+                    if (isPlayerOne)
+                        navController.navigate(Routes.p1NameToInGame)
+                    else
+                        if (uiState.vsPlayer)
+                            navController.navigate(Routes.p2NameToInGame)
+                }
         )
+
+        WinLoseGamesPlayedText(player = player)
+
         Image(
             painter = painterResource(id = player.playerAvatar),
             contentDescription = player.playerAvatar.toString(),
@@ -491,12 +507,44 @@ fun NotPlayerTurnAvatarImage(player: Player) {
             modifier = Modifier
                 .size((LocalConfiguration.current.screenWidthDp * 0.25f).dp)
                 .clip(CircleShape)
+                .clickable {
+                    if (isPlayerOne)
+                        navController.navigate(Routes.p1AvatarToInGame)
+                    else
+                        if (uiState.vsPlayer)
+                            navController.navigate(Routes.p2AvatarToInGame)
+                }
         )
     }
 }
 
 @Composable
+fun WinLoseGamesPlayedText(player: Player) {
+    Text(
+        text = "Wins: ${player.wins}",
+        fontSize = 10.sp,
+        color = Color.LightGray,
+        fontFamily = FontFamily.Serif,
+    )
+    Text(
+        text = "Loses: ${player.loses}",
+        fontSize = 10.sp,
+        color = Color.LightGray,
+        fontFamily = FontFamily.Serif,
+    )
+    Text(
+        text = "Games Played: ${player.gamesPlayed}",
+        fontSize = 10.sp,
+        color = Color.LightGray,
+        fontFamily = FontFamily.Serif,
+        modifier = Modifier
+            .padding(0.dp, 0.dp, 0.dp, (LocalConfiguration.current.screenWidthDp * 0.04f).dp)
+    )
+}
+
+@Composable
 fun SettingsButtonRow(navController: NavController, viewModel: GameViewModel, gameBoard: Board, player1: Player, player2: Player) {
+    val size = LocalConfiguration.current.screenWidthDp * 0.2f
     Row (
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -504,15 +552,15 @@ fun SettingsButtonRow(navController: NavController, viewModel: GameViewModel, ga
             .fillMaxWidth(1f)
             .padding(0.dp, (LocalConfiguration.current.screenWidthDp * 0.04f).dp)
     ) {
-        UndoButton(navController, viewModel, gameBoard, player1, player2)
-        ResetButton(navController, viewModel)
-        SettingsButton(navController)
-        HomeButton(navController, viewModel)
+        UndoButton(navController, viewModel, gameBoard, player1, player2, size)
+        ResetButton(navController, viewModel, size)
+        SettingsButton(navController, size)
+        HomeButton(navController, viewModel, size)
     }
 }
 
 @Composable
-fun UndoButton(navController: NavController, viewModel: GameViewModel, gameBoard: Board, player1: Player, player2: Player) {
+fun UndoButton(navController: NavController, viewModel: GameViewModel, gameBoard: Board, player1: Player, player2: Player, size: Float) {
     val uiState by viewModel.uiState.collectAsState()
     Image(
         painter = painterResource(id = R.drawable.undobutton),
@@ -521,8 +569,8 @@ fun UndoButton(navController: NavController, viewModel: GameViewModel, gameBoard
         modifier = Modifier
             .clip(CircleShape)
             .size(
-                width = (LocalConfiguration.current.screenWidthDp * 0.2f).dp,
-                height = (LocalConfiguration.current.screenWidthDp * 0.2f).dp
+                width = size.dp,
+                height = size.dp
             )
             .clickable {
                 if (uiState.vsPlayer) {
@@ -535,7 +583,7 @@ fun UndoButton(navController: NavController, viewModel: GameViewModel, gameBoard
 }
 
 @Composable
-fun ResetButton(navController: NavController, viewModel: GameViewModel) {
+fun ResetButton(navController: NavController, viewModel: GameViewModel, size: Float) {
     val uiState by viewModel.uiState.collectAsState()
 
     Image(
@@ -545,15 +593,14 @@ fun ResetButton(navController: NavController, viewModel: GameViewModel) {
         modifier = Modifier
             .clip(CircleShape)
             .size(
-                width = (LocalConfiguration.current.screenWidthDp * 0.2f).dp,
-                height = (LocalConfiguration.current.screenWidthDp * 0.2f).dp
+                width = size.dp,
+                height = size.dp
             )
             .clickable {
                 resetBoard(viewModel, uiState)
-                if(uiState.vsPlayer) {
+                if (uiState.vsPlayer) {
                     navController.navigate(Routes.gamePlayingPlayerScreen)
-                }
-                else {
+                } else {
                     navController.navigate(Routes.gamePlayingAIScreen)
                 }
             }
@@ -561,7 +608,7 @@ fun ResetButton(navController: NavController, viewModel: GameViewModel) {
 }
 
 @Composable
-fun SettingsButton(navController: NavController) {
+fun SettingsButton(navController: NavController, size: Float) {
     Image(
         painter = painterResource(id = R.drawable.settingsimage),
         contentDescription = "Settings Button",
@@ -569,8 +616,8 @@ fun SettingsButton(navController: NavController) {
         modifier = Modifier
             .clip(CircleShape)
             .size(
-                width = (LocalConfiguration.current.screenWidthDp * 0.2f).dp,
-                height = (LocalConfiguration.current.screenWidthDp * 0.2f).dp
+                width = size.dp,
+                height = size.dp
             )
             .clickable {
                 navController.navigate(Routes.settingsScreen)
@@ -579,7 +626,7 @@ fun SettingsButton(navController: NavController) {
 }
 
 @Composable
-fun HomeButton(navController: NavController, viewModel: GameViewModel) {
+fun HomeButton(navController: NavController, viewModel: GameViewModel, size: Float) {
     val uiState by viewModel.uiState.collectAsState()
 
     Image(
@@ -589,15 +636,14 @@ fun HomeButton(navController: NavController, viewModel: GameViewModel) {
         modifier = Modifier
             .clip(CircleShape)
             .size(
-                width = (LocalConfiguration.current.screenWidthDp * 0.2f).dp,
-                height = (LocalConfiguration.current.screenWidthDp * 0.2f).dp
+                width = size.dp,
+                height = size.dp
             )
             .clickable {
                 resetBoard(viewModel, uiState)
-                if(uiState.vsPlayer) {
+                if (uiState.vsPlayer) {
                     navController.navigate(Routes.gamePlayingPlayerScreen)
-                }
-                else {
+                } else {
                     navController.navigate(Routes.gamePlayingAIScreen)
                 }
                 navController.navigate(Routes.playerOrAIScreen)
@@ -605,10 +651,11 @@ fun HomeButton(navController: NavController, viewModel: GameViewModel) {
     )
 }
 
-fun undo(navController: NavController, gameBoard: Board, player1: Player, player2: Player) {
+fun undo(gameBoard: Board, player1: Player, player2: Player) {
     val boardGrid = gameBoard.boardGrid
     val playerOneGridTaken = player1.playerGrid
     val playerTwoGridTaken = player2.playerGrid
+    val boardFreeGrid = gameBoard.boardFreeGridList
 
     if (MoveQueue.moveQueue.isNotEmpty()) {
         InGameStatsManager.moves--
@@ -623,21 +670,479 @@ fun undo(navController: NavController, gameBoard: Board, player1: Player, player
         boardGrid[undidMove.iIndex][undidMove.jIndex][1] = undidMove.previous
         if (undidMove.iIndex - 1 > -1) {
             boardGrid[undidMove.iIndex - 1][undidMove.jIndex][1] = -1
+            if (Pair(undidMove.iIndex - 1, undidMove.jIndex) in boardFreeGrid) {
+                boardFreeGrid.remove(Pair(undidMove.iIndex - 1, undidMove.jIndex))
+            }
         }
     }
 }
 
 fun undoVsPlayer(navController: NavController, gameBoard: Board, player1: Player, player2: Player) {
     if (MoveQueue.moveQueue.isNotEmpty()) {
-        undo(navController, gameBoard, player1, player2)
+        undo(gameBoard, player1, player2)
         navController.navigate(Routes.gamePlayingPlayerScreen)
     }
 }
 
 fun undoVsAI(navController: NavController, gameBoard: Board, player1: Player, player2: Player) {
     if (MoveQueue.moveQueue.isNotEmpty()) {
-        undo(navController, gameBoard, player1, player2)
-        undo(navController, gameBoard, player1, player2)
+        undo(gameBoard, player1, player2)
+        undo(gameBoard, player1, player2)
         navController.navigate(Routes.gamePlayingAIScreen)
+    }
+}
+
+@Composable
+fun HorizontalInGameScreen(isPlayerOne: Boolean, gameBoard: Board, player1: Player, player2: Player, navController: NavController, viewModel: GameViewModel, onNextButtonClicked: (List<Any>) -> Unit) { /* dunno if any is an abuse see if theres better ways later on */
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val boardGrid = gameBoard.boardGrid
+    val playerOneGridTaken = player1.playerGrid
+    val playerTwoGridTaken = player2.playerGrid
+
+    var gameOverOut = false
+
+    Surface (
+        modifier = Modifier
+            .fillMaxSize(1f),
+        color = Color(0xFF101111)
+    ) {
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .fillMaxSize(1f)
+        ) {
+            Column (
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth(0.4f)
+                    .fillMaxHeight(1f)
+            ) {
+                Text(
+                    text = "Play Game",
+                    textAlign = TextAlign.Center,
+                    color = Color.LightGray,
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Serif,
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                        .padding(0.dp, 10.dp, 0.dp, 10.dp)
+                )
+
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(boardGrid[0].count()),
+                    modifier = Modifier
+                        .height((LocalConfiguration.current.screenHeightDp * 0.75f).dp)
+                        .fillMaxWidth((0.8f))
+                    /*tf this fixes it but doesn't even do anything*/
+                ) {
+                    for (i in 0..<boardGrid.count()) {
+                        for (j in 0..<boardGrid[0].count()) {
+                            if (boardGrid[i][j][1] == 1) {
+                                items(1) {
+                                    CardPlayerRender(player1.playerColor.first)
+                                }
+                            } else if (boardGrid[i][j][1] == 2) {
+                                items(1) {
+                                    CardPlayerRender(player2.playerColor.first)
+                                }
+                            } else if (boardGrid[i][j][1] == 0) {
+                                items(1) {
+                                    CardDefaultRender(element = boardGrid[i][j][0], onClick = {
+                                        gameBoard.boardFreeGrid -= 1
+                                        if (isPlayerOne) {
+                                            InGameStatsManager.playerOneTurn = false
+                                            InGameStatsManager.moves++
+                                            playerOneGridTaken.add(boardGrid[i][j][0])
+                                            MoveQueue.moveQueue.add(MoveInfo(i, j, boardGrid[i][j][1]))
+                                            boardGrid[i][j][1] = 1
+
+                                            if (i - 1 > -1) {
+                                                boardGrid[i - 1][j][1] = 0
+                                            }
+
+                                            if ((gameBoard.consecutiveCheckers(gameBoard, 1))) {
+                                                gameOverOut = true
+                                                player1.updateScore(true)
+                                                player2.updateScore(false)
+                                                Toast.makeText(context, "Player 1 Wins!", Toast.LENGTH_SHORT).show()
+                                            }
+                                            else if (gameBoard.boardFreeGrid == 0) {
+                                                gameOverOut = true
+                                                Toast.makeText(context, "It's a Draw!", Toast.LENGTH_SHORT).show()
+                                            }
+                                            onNextButtonClicked(
+                                                listOf(
+                                                    gameBoard,
+                                                    player1,
+                                                    player2,
+                                                    gameOverOut
+                                                )
+                                            )
+                                        }
+                                        else {
+                                            InGameStatsManager.playerOneTurn = true
+                                            InGameStatsManager.moves++
+                                            playerTwoGridTaken.add(boardGrid[i][j][0])
+                                            MoveQueue.moveQueue.add(MoveInfo(i, j, boardGrid[i][j][1]))
+                                            boardGrid[i][j][1] = 2
+
+                                            if (i - 1 > -1) {
+                                                boardGrid[i - 1][j][1] = 0
+                                            }
+
+                                            if (gameBoard.consecutiveCheckers(gameBoard, 2)) {
+                                                gameOverOut = true
+                                                player1.updateScore(false)
+                                                player2.updateScore(true)
+                                                Toast.makeText(context, "Player 2 Wins!", Toast.LENGTH_SHORT).show()
+                                            } else if (gameBoard.boardFreeGrid == 0) {
+                                                gameOverOut = true
+                                                Toast.makeText(context, "It's a Draw!", Toast.LENGTH_SHORT).show()
+                                                player1.draw()
+                                                player2.draw()
+                                            }
+                                            onNextButtonClicked(
+                                                listOf(
+                                                    gameBoard,
+                                                    player1,
+                                                    player2,
+                                                    gameOverOut
+                                                )
+                                            )
+                                        }
+                                    })
+                                }
+                            } else if (boardGrid[i][j][1] == -1) /* locked circle to be occupied */ {
+                                items(1) {
+                                    CardMagentaRender(element = boardGrid[i][j][0], onClick = {})
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Column (
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .fillMaxHeight(1f)
+            ) {
+                Text(
+                    text = "Moves: " + InGameStatsManager.moves,
+                    fontSize = 25.sp,
+                    textAlign = TextAlign.Center,
+                    color = Color.LightGray,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Serif,
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                        .padding(0.dp, 10.dp)
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                ) {
+                    HorizontalDisplayAvatars(navController, uiState, player1, player2)
+                }
+
+                HorizontalSettingsButtonRow(navController, viewModel, gameBoard, player1, player2)
+            }
+        }
+    }
+}
+
+@Composable
+fun HorizontalInGameScreenAI(gameBoard: Board, player1: Player, player2: Player, navController: NavController, viewModel: GameViewModel, onNextButtonClicked: (List<Any>) -> Unit) { /* dunno if any is an abuse see if theres better ways later on */
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val boardGrid = gameBoard.boardGrid
+    val playerOneGridTaken = player1.playerGrid
+    val playerTwoGridTaken = player2.playerGrid
+
+    val boardFreeGridList = gameBoard.boardFreeGridList
+
+    var gameOverOut = false
+
+    Surface (
+        modifier = Modifier
+            .fillMaxSize(1f),
+        color = Color(0xFF101111)
+    ) {
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .fillMaxSize(1f)
+        ) {
+            Column (
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth(0.4f)
+                    .fillMaxHeight(1f)
+            ) {
+                Text(
+                    text = "Play Game",
+                    textAlign = TextAlign.Center,
+                    color = Color.LightGray,
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Serif,
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                        .padding(0.dp, 10.dp, 0.dp, 10.dp)
+                )
+
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(boardGrid[0].count()),
+                    modifier = Modifier
+                        .height((LocalConfiguration.current.screenHeightDp * 0.75f).dp)
+                        .fillMaxWidth((0.8f))
+                    /*tf this fixes it but doesn't even do anything*/
+                ) {
+                    for (i in 0..<boardGrid.count()) {
+                        for (j in 0..<boardGrid[0].count()) {
+                            if (boardGrid[i][j][1] == 1)/* occupied by player 1*/ {
+                                items(1) {
+                                    CardPlayerRender(player1.playerColor.first)
+                                }
+                            } else if (boardGrid[i][j][1] == 2) {
+                                items(1) {
+                                    CardPlayerRender(player2.playerColor.first)
+                                }
+                            } else if (boardGrid[i][j][1] == 0) {
+                                boardFreeGridList.add(Pair(i, j))
+
+                                items(1) {
+                                    CardDefaultRender(element = boardGrid[i][j][0], onClick = {
+                                        InGameStatsManager.moves++
+                                        gameBoard.boardFreeGrid -= 1
+                                        playerOneGridTaken.add(boardGrid[i][j][0])
+                                        MoveQueue.moveQueue.add(MoveInfo(i, j, boardGrid[i][j][1]))
+                                        boardGrid[i][j][1] = 1
+
+                                        if (i - 1 > -1) {
+                                            boardGrid[i - 1][j][1] = 0
+                                            boardFreeGridList.add(Pair(i - 1, j))
+                                        }
+
+                                        boardFreeGridList.remove(Pair(i, j))
+
+                                        val aiPick = boardFreeGridList.random()
+                                        InGameStatsManager.moves++
+
+                                        MoveQueue.moveQueue.add(MoveInfo(aiPick.first, aiPick.second, boardGrid[aiPick.first][aiPick.second][1]))
+                                        boardGrid[aiPick.first][aiPick.second][1] = 2
+                                        boardFreeGridList.remove(Pair(aiPick.first, aiPick.second))
+                                        playerTwoGridTaken.add(boardGrid[aiPick.first][aiPick.second][0])
+
+                                        if (aiPick.first - 1 > -1) {
+                                            boardGrid[aiPick.first - 1][aiPick.second][1] = 0
+                                            boardFreeGridList.add(Pair(aiPick.first - 1, aiPick.second))
+                                        }
+
+                                        if ((gameBoard.consecutiveCheckers(gameBoard, 1))) {
+                                            gameOverOut = true
+                                            Toast.makeText(context, "Player One Wins!", Toast.LENGTH_SHORT).show()
+                                            player1.updateScore(true)
+                                            player2.updateScore(false)
+                                        }
+                                        else if ((gameBoard.consecutiveCheckers(gameBoard, 2))) {
+                                            gameOverOut = true
+                                            player1.updateScore(false)
+                                            Toast.makeText(context, "Player 2 Wins!", Toast.LENGTH_SHORT).show()
+                                            player2.updateScore(true)
+                                        }
+                                        else if (gameBoard.boardFreeGrid == 0) {
+                                            gameOverOut = true
+                                            Toast.makeText(context, "It's a Draw!", Toast.LENGTH_SHORT).show()
+                                            player1.draw()
+                                            player2.draw()
+                                        }
+
+                                        onNextButtonClicked(
+                                            listOf(
+                                                gameBoard,
+                                                player1,
+                                                player2,
+                                                gameOverOut
+                                            )
+                                        )
+                                    })
+                                }
+                            } else if (boardGrid[i][j][1] == -1) /* locked circle to be occupied */ {
+                                items(1) {
+                                    CardMagentaRender(element = boardGrid[i][j][0], onClick = { })
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Column (
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .fillMaxHeight(1f)
+            ) {
+                Text(
+                    text = "Moves: " + InGameStatsManager.moves,
+                    fontSize = 25.sp,
+                    textAlign = TextAlign.Center,
+                    color = Color.LightGray,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Serif,
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                        .padding(0.dp, 10.dp)
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                ) {
+                    HorizontalDisplayAvatars(navController, uiState, player1, player2)
+                }
+
+                HorizontalSettingsButtonRow(navController, viewModel, gameBoard, player1, player2)
+            }
+        }
+    }
+}
+
+@Composable
+fun HorizontalDisplayAvatars(navController: NavController, uiState: GameUIState, player1: Player, player2: Player) {
+    if (InGameStatsManager.playerOneTurn) {
+        HorizontalPlayerTurnAvatarImage(navController = navController, player = player1, uiState = uiState, isPlayerOne = true)
+        HorizontalNotPlayerTurnAvatarImage(navController = navController, player = player2, uiState = uiState, isPlayerOne = false)
+    }
+    else {
+        HorizontalNotPlayerTurnAvatarImage(navController = navController, player = player1, uiState = uiState, isPlayerOne = true)
+        HorizontalPlayerTurnAvatarImage(navController = navController, player = player2, uiState = uiState, isPlayerOne = false)
+    }
+}
+
+@Composable
+fun HorizontalPlayerTurnAvatarImage(navController: NavController, uiState: GameUIState, player: Player, isPlayerOne: Boolean) {
+    var widthFraction = 1f
+    if (isPlayerOne)
+        widthFraction = 0.5f
+    Column (
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth(widthFraction)
+    ) {
+        Text(
+            text = player.playerName,
+            fontSize = 25.sp,
+            color = Color.LightGray,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Serif,
+            modifier = Modifier
+                .clickable {
+                    if (isPlayerOne)
+                        navController.navigate(Routes.p1NameToInGame)
+                    else
+                        if (uiState.vsPlayer)
+                            navController.navigate(Routes.p2NameToInGame)
+                }
+        )
+
+        WinLoseGamesPlayedText(player = player)
+
+        Image(
+            painter = painterResource(id = player.playerAvatar),
+            contentDescription = player.playerAvatar.toString(),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size((LocalConfiguration.current.screenHeightDp * 0.25f).dp)
+                .clip(CircleShape)
+                .border(2.dp, player.playerColor.first, CircleShape)
+                .clickable {
+                    if (isPlayerOne)
+                        navController.navigate(Routes.p1AvatarToInGame)
+                    else
+                        if (uiState.vsPlayer)
+                            navController.navigate(Routes.p2AvatarToInGame)
+                }
+        )
+    }
+}
+
+@Composable
+fun HorizontalNotPlayerTurnAvatarImage(navController: NavController, uiState: GameUIState, player: Player, isPlayerOne: Boolean) {
+    var widthFraction = 1f
+    if (isPlayerOne)
+        widthFraction = 0.5f
+    Column (
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth(widthFraction)
+    ) {
+        Text(
+            text = player.playerName,
+            fontSize = 25.sp,
+            color = Color.LightGray,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Serif,
+            modifier = Modifier
+                .clickable {
+                    if (isPlayerOne)
+                        navController.navigate(Routes.p1NameToInGame)
+                    else
+                        if (uiState.vsPlayer)
+                            navController.navigate(Routes.p2NameToInGame)
+                }
+        )
+
+        WinLoseGamesPlayedText(player = player)
+
+        Image(
+            painter = painterResource(id = player.playerAvatar),
+            contentDescription = player.playerAvatar.toString(),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size((LocalConfiguration.current.screenHeightDp * 0.25f).dp)
+                .clip(CircleShape)
+                .clickable {
+                    if (isPlayerOne)
+                        navController.navigate(Routes.p1AvatarToInGame)
+                    else
+                        if (uiState.vsPlayer)
+                            navController.navigate(Routes.p2AvatarToInGame)
+                }
+        )
+    }
+}
+
+@Composable
+fun HorizontalSettingsButtonRow(navController: NavController, viewModel: GameViewModel, gameBoard: Board, player1: Player, player2: Player) {
+    val size = LocalConfiguration.current.screenHeightDp * 0.15f
+    Row (
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier
+            .fillMaxWidth(1f)
+            .padding(0.dp, (LocalConfiguration.current.screenHeightDp * 0.04f).dp)
+    ) {
+        UndoButton(navController, viewModel, gameBoard, player1, player2, size)
+        ResetButton(navController, viewModel, size)
+        SettingsButton(navController, size)
+        HomeButton(navController, viewModel, size)
     }
 }

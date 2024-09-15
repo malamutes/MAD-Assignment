@@ -29,12 +29,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @Composable
-fun InGameSettings(navController: NavController, viewModel: GameViewModel) {
+fun InGameSettings(navController: NavController, viewModel: GameViewModel, portrait: Boolean) {
     val uiState by viewModel.uiState.collectAsState()
 
     Surface (
@@ -48,19 +49,97 @@ fun InGameSettings(navController: NavController, viewModel: GameViewModel) {
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            var customiseTitlePadding = 10f
+            if (portrait)
+                customiseTitlePadding = 60f
+
             SettingsTitle()
-            PlayerCustomisableGroup(
-                navController = navController,
-                player = uiState.playerOne,
-                isPlayerOne = true
-            )
-            if (uiState.vsPlayer) {
-                PlayerCustomisableGroup(
-                    navController = navController,
-                    player = uiState.playerTwo,
-                    isPlayerOne = false
-                )
+
+            if (portrait) {
+                if (uiState.vsPlayer) {
+                    PlayerCustomisableGroup(
+                        navController = navController,
+                        player = uiState.playerOne,
+                        isPlayerOne = true,
+                        playerNumText = "One",
+                        customiseTitlePadding = customiseTitlePadding
+                    )
+
+                    PlayerCustomisableGroup(
+                        navController = navController,
+                        player = uiState.playerTwo,
+                        isPlayerOne = false,
+                        playerNumText = "Two",
+                        customiseTitlePadding = customiseTitlePadding
+                    )
+                }
+                else {
+                    PlayerCustomisableGroup(
+                        navController = navController,
+                        player = uiState.playerOne,
+                        isPlayerOne = true,
+                        playerNumText = "One",
+                        customiseTitlePadding = customiseTitlePadding
+                    )
+                }
             }
+            else {
+                Row (
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                ) {
+                    if (uiState.vsPlayer) {
+                        Column (
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                        ) {
+                            PlayerCustomisableGroup(
+                                navController = navController,
+                                player = uiState.playerOne,
+                                isPlayerOne = true,
+                                playerNumText = "One",
+                                customiseTitlePadding = customiseTitlePadding
+                            )
+                        }
+
+                        Column (
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .fillMaxWidth(1f)
+                        ) {
+                            PlayerCustomisableGroup(
+                                navController = navController,
+                                player = uiState.playerTwo,
+                                isPlayerOne = false,
+                                playerNumText = "Two",
+                                customiseTitlePadding = customiseTitlePadding
+                            )
+                        }
+                    }
+                    else {
+                        Column (
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                        ) {
+                            PlayerCustomisableGroup(
+                                navController = navController,
+                                player = uiState.playerOne,
+                                isPlayerOne = true,
+                                playerNumText = "One",
+                                customiseTitlePadding = customiseTitlePadding
+                            )
+                        }
+                    }
+                }
+            }
+
             CloseButton(navController = navController, uiState = uiState)
         }
     }
@@ -81,14 +160,14 @@ fun SettingsTitle() {
 }
 
 @Composable 
-fun PlayerCustomisableGroup(navController: NavController, player: Player, isPlayerOne: Boolean) {
-    CustomisePlayerTitle(title = "Customise Player One")
+fun PlayerCustomisableGroup(navController: NavController, player: Player, isPlayerOne: Boolean, playerNumText: String, customiseTitlePadding: Float) {
+    CustomisePlayerTitle(title = "Customise Player $playerNumText", customiseTitlePadding = customiseTitlePadding)
     DisplayPlayerName(navController = navController, playerName = player.playerName, isPlayerOne = isPlayerOne)
     ColourAndAvatarRow(navController = navController, player = player, isPlayerOne = isPlayerOne)
 }
 
 @Composable
-fun CustomisePlayerTitle(title: String) {
+fun CustomisePlayerTitle(title: String, customiseTitlePadding: Float) {
     Text(
         text = title,
         textAlign = TextAlign.Center,
@@ -98,7 +177,7 @@ fun CustomisePlayerTitle(title: String) {
         fontFamily = FontFamily.Serif,
         modifier = Modifier
             .fillMaxWidth(1f)
-            .padding(0.dp, 60.dp, 0.dp, 5.dp)
+            .padding(0.dp, customiseTitlePadding.dp, 0.dp, 5.dp)
     )
 }
 
@@ -147,7 +226,7 @@ fun DisplayPlayerColour(navController: NavController, player: Player, isPlayerOn
         colors = ButtonDefaults.buttonColors(player.playerColor.first),
         shape = CircleShape,
         modifier = Modifier
-            .size(LocalConfiguration.current.screenWidthDp.dp * 0.25f)
+            .fillMaxWidth(0.35f)
             .padding(25.dp, 5.dp)
             .aspectRatio(1f)
     ) { }
@@ -160,7 +239,7 @@ fun DisplayPlayerAvatar(navController: NavController, player: Player, isPlayerOn
         contentDescription = "Avatar",
         contentScale = ContentScale.Crop,
         modifier = Modifier
-            .size(LocalConfiguration.current.screenWidthDp.dp * 0.25f)
+            .fillMaxWidth(0.35f / 0.65f)
             .size(100.dp)
             .padding(25.dp, 5.dp)
             .clip(CircleShape)
@@ -183,7 +262,9 @@ fun CloseButton(navController: NavController, uiState: GameUIState) {
             else
                 navController.navigate(Routes.gamePlayingAIScreen)
         },
-        colors = ButtonDefaults.buttonColors(Color.LightGray)
+        colors = ButtonDefaults.buttonColors(Color.LightGray),
+        modifier = Modifier
+            .padding(0.dp, 60.dp, 0.dp, 0.dp)
     ) {
         Text (
             text = "Close Settings",

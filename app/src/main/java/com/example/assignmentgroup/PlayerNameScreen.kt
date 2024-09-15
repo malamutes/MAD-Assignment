@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerNameScreen(playerName: String, player: Player, heading: String, onNextButtonClicked: (Player) -> Unit) {
+fun PlayerNameScreen(playerName: String, player: Player, heading: String, width: Float, height: Float, onNextButtonClicked: (Player) -> Unit) {
     var playerNameOut by remember { mutableStateOf(playerName) }
 
     Surface (
@@ -61,7 +61,7 @@ fun PlayerNameScreen(playerName: String, player: Player, heading: String, onNext
                     fontSize = 35.sp
                 ),
                 modifier = Modifier
-                    .size(250.dp, 300.dp)
+                    .size(width.dp, height.dp)
             ) /* make it adapt to screen size */
 
             Button(
@@ -70,8 +70,7 @@ fun PlayerNameScreen(playerName: String, player: Player, heading: String, onNext
                     onNextButtonClicked(player)
                 },
                 modifier = Modifier
-                    .size(200.dp)
-                    .aspectRatio(2f)
+                    .padding(0.dp, 10.dp, 0.dp, 0.dp)
             ) {
                 Text(
                     text = "Enter",

@@ -31,9 +31,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerColourScreen(colorOption: List<Pair<Color, String>>, player: Player, heading: String, onNextButtonClicked: (Player) -> Unit) {
     Surface (
@@ -60,30 +60,32 @@ fun PlayerColourScreen(colorOption: List<Pair<Color, String>>, player: Player, h
                 modifier = Modifier
                     .weight(1f)
             ) {
-                items(colorOption) { colors -> DiscColourCard(
-                    colorOption = colors,
-                    onClick = {
-                        player.playerColor = colors;
-                        onNextButtonClicked(player)
-                    }
-                ) }
+                items(colorOption) { colors ->
+                    DiscColourCard(
+                        colorOption = colors,
+                        size = LocalConfiguration.current.screenWidthDp * 0.25f,
+                        onClick = {
+                            player.playerColor = colors;
+                            onNextButtonClicked(player)
+                        }
+                    )
+                }
             }
         }
     }
-
 }
 
 
 @Composable
-fun DiscColourCard(colorOption: Pair<Color, String>, onClick: () -> Unit) {
+fun DiscColourCard(colorOption: Pair<Color, String>, size: Float, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = colorOption.first),
         modifier = Modifier
             .size(
-                width = (LocalConfiguration.current.screenWidthDp * 0.25f).dp,
-                height = (LocalConfiguration.current.screenWidthDp * 0.25f).dp
+                width = size.dp,
+                height = size.dp
             )
             .padding(15.dp, 15.dp)
             .aspectRatio(1f)
@@ -107,4 +109,44 @@ fun DiscColourCard(colorOption: Pair<Color, String>, onClick: () -> Unit) {
             )
         }
     }
+}
+
+@Composable
+fun HorizontalPlayerColourScreen(colorOption: List<Pair<Color, String>>, player: Player, heading: String, onNextButtonClicked: (Player) -> Unit) {
+    Surface (
+        modifier = Modifier
+            .fillMaxSize(1f),
+        color = Color(0xFF101111)
+    ) {
+        Column {
+            Text (
+                text = heading,
+                textAlign = TextAlign.Center,
+                color = Color.LightGray,
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Serif,
+                modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .padding(0.dp, 10.dp, 0.dp, 5.dp)
+            )
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(5),
+                verticalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                items(colorOption) { colors -> DiscColourCard(
+                    colorOption = colors,
+                    size = kotlin.math.min(LocalConfiguration.current.screenWidthDp * 0.15f, LocalConfiguration.current.screenHeightDp * 0.3f),
+                    onClick = {
+                        player.playerColor = colors
+                        onNextButtonClicked(player)
+                    }
+                ) }
+            }
+        }
+    }
+
 }

@@ -17,21 +17,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-
-@Composable
-fun teteScreen(playerOrAiOption: List<Pair<String, Boolean>>,
-                     onNextButtonClicked: (Boolean) -> Unit){
-    println("asdadasd")
-    Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally , modifier = Modifier
-        .padding(50.dp)
-        .fillMaxSize()) {
-        playerOrAiOption.forEach() {
-            options -> PlayerOrAIButton(playerVsAiOption = options.first,
-            onClick = {onNextButtonClicked(options.second)})
-        }
-    }
-}
-
 @Composable
 fun tete(playerVsAiOption: String, onClick: () -> Unit){
     Button(
