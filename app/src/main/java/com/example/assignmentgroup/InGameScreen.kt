@@ -373,14 +373,7 @@ fun CardDefaultRender(element: Int, onClick: () -> Unit) {
             .aspectRatio(1f)
             .size(50.dp)
             .padding(1.dp)
-    ) {
-        Text(
-            text = element.toString(),
-            fontSize = 1.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Serif
-        )
-    }
+    ) { }
 }
 
 @Composable
@@ -393,14 +386,7 @@ fun CardMagentaRender(element: Int, onClick: () -> Unit) {
             .aspectRatio(1f)
             .size(50.dp)
             .padding(1.dp)
-    ) {
-        Text(
-            text = element.toString(),
-            fontSize = 1.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Serif
-        )
-    }
+    ) { }
 }
 
 @Composable
@@ -413,14 +399,7 @@ fun CardPlayerRender(color: Color) {
             .aspectRatio(1f)
             .size(50.dp)
             .padding(1.dp)
-    ) {
-        Text(
-            text = "1",
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Serif
-        )
-    }
+    ) { }
 }
 
 @Composable
